@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 dialog.setContentView(view)
                 dialog.show()
 
+
             }
             true
         }
