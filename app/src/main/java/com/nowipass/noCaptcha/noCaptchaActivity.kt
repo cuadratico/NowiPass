@@ -122,7 +122,7 @@ class noCaptchaActivity : AppCompatActivity() {
 
         box.setOnClickListener {
             scope.cancel()
-            if (tiempo < 15  && toques < 7){
+            if (tiempo in 0..15  && toques < 7){
                 box.setImageResource(R.drawable.check)
                 Thread.sleep(100)
                 startActivity(Intent(applicationContext, MainActivity::class.java))

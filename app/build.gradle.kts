@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.androidx.appcompat.v130)
     implementation(libs.androidx.fragment.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
