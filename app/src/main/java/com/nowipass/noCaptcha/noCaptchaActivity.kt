@@ -48,7 +48,7 @@ class noCaptchaActivity : AppCompatActivity() {
         val mk = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        val pref = EncryptedSharedPreferences.create(applicationContext, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
         val main = findViewById<ConstraintLayout>(R.id.main)
         val fondo = findViewById<ShapeableImageView>(R.id.fondo)
@@ -68,7 +68,7 @@ class noCaptchaActivity : AppCompatActivity() {
                 for (i in 59.downTo(0)){
                     if (i == 0){
                         dialog.dismiss()
-                        pref.edit().putBoolean("block", true).apply()
+                        pref.edit().putBoolean("block", false).apply()
                         recreate()
                     }else {
                         delay(1000)
@@ -85,14 +85,16 @@ class noCaptchaActivity : AppCompatActivity() {
             val display = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(display)
 
-            fondo_layout.x = Random.nextInt(100, display.widthPixels - 750).toFloat()
-            fondo_layout.y = Random.nextInt(200, display.heightPixels - 73).toFloat()
+            fondo_layout.x = Random.nextInt(0, (display.xdpi - 10).toInt()).toFloat()
+            fondo_layout.y = Random.nextInt(500, display.heightPixels - 120).toFloat()
+
         }
 
-        if (pref.getBoolean("block", false)){
+        if (!pref.getBoolean("inactive", false)){
+            finishAffinity()
+        }else if (!pref.getBoolean("block", false)){
             actualizar()
-
-            scope.launch {
+            scope.launch{
                 while(true){
                     tiempo ++
                     delay(1000)

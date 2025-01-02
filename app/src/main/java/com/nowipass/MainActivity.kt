@@ -4,13 +4,16 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.EditText
@@ -25,8 +28,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -34,6 +41,8 @@ import com.nowipass.databinding.ActivityMainBinding
 import com.nowipass.generator.adapter_switches
 import com.nowipass.generator.switches_provier
 import com.nowipass.generator.total
+import com.nowipass.manager.comprobacion
+import com.nowipass.manager.extraccion
 import java.text.Normalizer.Form
 
 lateinit var password: TextView
@@ -70,7 +79,7 @@ fun generator(size: Int, password: TextView, progress: LinearProgressIndicator){
         }
     }
     password.text = pass
-    Formula.entropia(pass, progress)
+    entropia(pass, progress)
 }
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -79,11 +88,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        activitis ++
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
@@ -108,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 val edit = view.findViewById<EditText>(R.id.texto_editable)
                 val p = view.findViewById<LinearProgressIndicator>(R.id.progress)
                 edit.addTextChangedListener {dato ->
-                    Formula.entropia(dato.toString(), p)
+                    entropia(dato.toString(), p)
                 }
                 dialog.setContentView(view)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -119,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 val dialog = BottomSheetDialog(this)
                 val view = LayoutInflater.from(this).inflate(R.layout.generator_view, null)
 
-                val progress= view.findViewById<LinearProgressIndicator>(R.id.progress)
+                val progress = view.findViewById<LinearProgressIndicator>(R.id.progress)
                 val recy = view.findViewById<RecyclerView>(R.id.selections)
                 recy.adapter = adapter_switches(switches_provier.switches, progress)
                 recy.layoutManager = LinearLayoutManager(this)
@@ -174,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 copy.setOnClickListener {
-                    val manage = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val manage = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("texto", password.text.toString())
                     manage.setPrimaryClip(clip)
                     dialog.dismiss()
@@ -183,7 +191,16 @@ class MainActivity : AppCompatActivity() {
                 dialog.show()
 
             }
-            true
+            false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onDestroy() {
+        super.onDestroy()
+        activitis -= 1
+        if (activitis == 0){
+            extraccion(this)
         }
     }
 }

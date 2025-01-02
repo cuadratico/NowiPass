@@ -8,4 +8,48 @@
 
 
 
+
+    <ImageView
+        android:id="@+id/manage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/manager_logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bordes_manage_enter"
+        />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/secure_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        >
+
+        <View
+            android:id="@+id/fondo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bordes_manage_enter"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/fondo"
+            app:layout_constraintEnd_toEndOf="@id/fondo"
+            app:layout_constraintStart_toStartOf="@id/fondo"
+            app:layout_constraintBottom_toBottomOf="@id/fondo"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/secure_clock"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

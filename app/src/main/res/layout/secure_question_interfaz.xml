@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <View
+        android:id="@+id/fondo"
+        android:layout_width="270dp"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/bordes_blue2"
+        />
+
+    <View
+        android:id="@+id/fondo_opor"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/bordes_blue2"
+        app:layout_constraintBottom_toTopOf="@id/fondo"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        android:layout_marginBottom="20dp"
+        />
+
+    <TextView
+        android:id="@+id/opor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/fondo_opor"
+        app:layout_constraintBottom_toBottomOf="@id/fondo_opor"
+        app:layout_constraintEnd_toEndOf="@id/fondo_opor"
+        app:layout_constraintStart_toStartOf="@id/fondo_opor"
+        android:text="3"
+        android:textColor="@color/gris_3"
+        android:textSize="25dp"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@+id/resumen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Secure question"
+        app:layout_constraintTop_toTopOf="@id/fondo"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        android:layout_marginTop="5dp"
+        android:textSize="15dp"
+        android:textColor="@color/gris_3"
+        android:textStyle="italic"
+        />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/input_answer"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        app:layout_constraintBottom_toBottomOf="@id/fondo"
+        android:textColor="@color/gris_3"
+        android:textColorHint="@color/gris_3"
+        android:hint="Your answer"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textSize="15dp"
+        android:layout_marginBottom="10dp"
+        />
+
+
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinner_questions"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/resumen"
+        app:layout_constraintBottom_toTopOf="@id/input_answer"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        />
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/resumen"
+        app:layout_constraintBottom_toTopOf="@id/input_answer"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        android:textColor="@color/gris_3"
+        />
+
+    <View
+        android:id="@+id/fondo_boton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/blue"
+        app:layout_constraintTop_toBottomOf="@id/fondo"
+        app:layout_constraintEnd_toEndOf="@id/fondo"
+        app:layout_constraintStart_toStartOf="@id/fondo"
+        android:layout_marginTop="20dp"
+        />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_right"
+        app:layout_constraintTop_toTopOf="@id/fondo_boton"
+        app:layout_constraintBottom_toBottomOf="@id/fondo_boton"
+        app:layout_constraintStart_toStartOf="@id/fondo_boton"
+        app:layout_constraintEnd_toEndOf="@id/fondo_boton"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

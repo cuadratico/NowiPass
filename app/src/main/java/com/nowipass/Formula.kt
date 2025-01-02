@@ -8,9 +8,6 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlin.math.log2
 
 
-class Formula {
-
-    companion object {
         @SuppressLint("ResourceAsColor")
         fun entropia(password: String, progress: LinearProgressIndicator) {
             val provier = Provier_local()
@@ -49,5 +46,3 @@ class Formula {
                 progress.setIndicatorColor(ContextCompat.getColor(progress.context, R.color.green))
             }
         }
-    }
-}

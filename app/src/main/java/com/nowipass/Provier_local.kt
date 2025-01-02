@@ -7,3 +7,5 @@ class Provier_local {
     val numeros = (0..9).map { it.toString() }
     val simbolos = listOf("!", "@", "#", "$", "%", "&", "*","-", "_", "=", "+")
 }
+
+var activitis = 0
