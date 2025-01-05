@@ -90,7 +90,7 @@ class noCaptchaActivity : AppCompatActivity() {
 
         }
 
-        if (!pref.getBoolean("inactive", false)){
+        if (pref.getBoolean("inactive", false)){
             finishAffinity()
         }else if (!pref.getBoolean("block", false)){
             actualizar()

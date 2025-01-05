@@ -35,10 +35,9 @@ import java.util.Base64
 import javax.crypto.Cipher
 import kotlin.random.Random
 
-class gen {
+class gen(val context: Context) {
 
-
-    fun finish(context: Context, activity: Activity){
+    fun finish(activity: Activity){
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
@@ -50,8 +49,9 @@ class gen {
         activity.finishAffinity()
 
     }
+
     @SuppressLint("NewApi")
-    fun gener(context: Context){
+    fun gener(){
         val numero = Random.nextInt(0, 9)
         var password = ""
         for (valor in 0..9){
@@ -93,8 +93,9 @@ class gen {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun recep(context: Context, pass: AppCompatEditText, opor: TextView, activity: Activity, dialog: Dialog){
-        var exito = 0
+    fun recep(pass: AppCompatEditText, opor: TextView, activity: Activity, dialog: Dialog){
+
+
         val password = pass.text.toString()
         val ks = KeyStore.getInstance("AndroidKeyStore")
         ks.load(null)
@@ -102,20 +103,25 @@ class gen {
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        var pref  = EncryptedSharedPreferences.create(context, "ap", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pref  = EncryptedSharedPreferences.create(context, "ap", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val hash = MessageDigest.getInstance("SHA256")
 
         if (ks.getKey(password.split(password[5])[0], null) != null || Base64.getEncoder().withoutPadding().encodeToString(hash.digest(password.split(password[4])[1].toByteArray())) == pref.getString("hash", "")){
-             val intent = Intent(context, ManageActivity::class.java)
+            if (pref.getBoolean("question_exist", false)){
+                sesion_register(1, mk)
+            }
+            val intent = Intent(context, ManageActivity::class.java)
                 .putExtra("alias", password.split(password[5])[0])
             context.startActivity(intent)
-            exito = 1
             dialog.dismiss()
             activity.finish()
         }else {
+            if (pref.getBoolean("question_exist", false)){
+                sesion_register(0 ,mk)
+            }
             if (opor.text.toString().toInt() <= 0){
                 pref.edit().putString("opor", "0").apply()
-                finish(context, activity)
+                finish(activity)
             }else {
                 opor.text = (opor.text.toString().toInt() - 1).toString()
                 pref.edit().putString("opor", opor.text.toString()).apply()
@@ -123,15 +129,10 @@ class gen {
             }
         }
 
-        pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        val c = Cipher.getInstance("AES/GCM/NoPadding")
-        c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("aws", ""), null))
-        val sesion = sesion_db(context)
-        sesion.put(Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(LocalDateTime.now().toString().split("T").joinToString("-").toByteArray())), exito, Base64.getEncoder().withoutPadding().encodeToString(c.iv))
     }
 
 
-    fun recep_answer(context: Context, valor: EditText, opor: TextView, activity: Activity, dialog: Dialog){
+    fun recep_answer (valor: EditText, opor: TextView, activity: Activity, dialog: Dialog){
 
         val ks = KeyStore.getInstance("AndroidKeyStore")
         ks.load(null)
@@ -142,7 +143,7 @@ class gen {
 
         val pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
-        if (ks.getKey(valor.text.toString(), null) != null){
+        if (ks.getKey("Nowi", null) != null){
             val intent = Intent(context, sesionActivity::class.java)
                 .putExtra("aws", valor.text.toString())
 
@@ -150,14 +151,33 @@ class gen {
             activity.finish()
             dialog.dismiss()
         }else {
+            Toast.makeText(context, "la clave no existe", Toast.LENGTH_LONG).show()
             if (opor.text.toString().toInt() > 0){
                 opor.text = (opor.text.toString().toInt() - 1).toString()
                 pref.edit().putString("opor", opor.text.toString()).apply()
                 valor.setText("")
             }else {
                 pref.edit().putString("opor", "0").apply()
-                finish(context, activity)
+                finish(activity)
             }
         }
     }
+
+    @SuppressLint("NewApi")
+    fun sesion_register(exito: Int, mk: MasterKey){
+        val sesion = sesion_db(context)
+        val pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
+        val ks = KeyStore.getInstance("AndroidKeyStore")
+        ks.load(null)
+
+        val c = Cipher.getInstance("AES/GCM/NoPadding")
+        c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("aws", ""), null))
+
+        sesion.put(Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(LocalDateTime.now().toString().split("T").joinToString("-").toByteArray())), exito, Base64.getEncoder().withoutPadding().encodeToString(c.iv))
+    }
+
 }
+
+
+

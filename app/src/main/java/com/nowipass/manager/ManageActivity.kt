@@ -54,6 +54,10 @@ import com.nowipass.manager.recy.manage_data
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.nowipass.data_bases.pass_db.Companion.asunto
+import com.nowipass.data_bases.pass_db.Companion.autentificador_pass
+import com.nowipass.data_bases.pass_db.Companion.iv
+import com.nowipass.data_bases.pass_db.Companion.pass
 import kotlinx.coroutines.delay
 import java.security.KeyStore
 import java.time.LocalDateTime
@@ -74,6 +78,7 @@ class ManageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_manage)
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         val add = findViewById<ConstraintLayout>(R.id.add_pass)
+        val ali = intent.extras?.getString("alias").orEmpty()
         val recy = findViewById<RecyclerView>(R.id.recy)
         val adapter = manage_adapter(elementos)
         recy.adapter = adapter
@@ -83,10 +88,8 @@ class ManageActivity : AppCompatActivity() {
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
-        var pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        pref.edit().putString("ali", intent.extras?.getString("alias").orEmpty()).apply()
+        var pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
-        pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         fun bye(texto:String){
             Toast.makeText(applicationContext, texto, Toast.LENGTH_SHORT).show()
             onPause()
@@ -117,6 +120,7 @@ class ManageActivity : AppCompatActivity() {
         }
 
         fun secure_question(){
+            val gen = gen(this)
             val dialog = Dialog(this)
             val view = layoutInflater.inflate(R.layout.secure_question_interfaz, null)
             var question = ""
@@ -153,6 +157,7 @@ class ManageActivity : AppCompatActivity() {
                 kg.init(kgen)
                 kg.generateKey()
 
+                gen.sesion_register(1, mk)
                 dialog.dismiss()
             }
             dialog.setContentView(view)
@@ -168,23 +173,23 @@ class ManageActivity : AppCompatActivity() {
         }else {
             val db = pass_db(this)
             db.get()
-            if (pass_db.autentificador_pass){
-                pass_db.autentificador_pass = false
+            if (autentificador_pass){
+                autentificador_pass = false
                 pref = EncryptedSharedPreferences.create(applicationContext, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
                 fun recepcion(){
                     try {
                         val ks = KeyStore.getInstance("AndroidKeyStore")
                         ks.load(null)
 
-                        for (position in 0..pass_db.asunto.size - 1) {
+                        for (position in 0..asunto.size - 1) {
                             val c = Cipher.getInstance("AES/GCM/NoPadding")
-                            c.init(Cipher.DECRYPT_MODE, ks.getKey(pref.getString("ali", ""), null), GCMParameterSpec(128, Base64.getDecoder().decode(pass_db.iv[position])))
-                            elementos.add(manage_data(String(Base64.getDecoder().decode(pass_db.asunto[position])), String(c.doFinal(Base64.getDecoder().decode(pass_db.pass[position]))), position.toString()))
+                            c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv[position])))
+                            elementos.add(manage_data(String(Base64.getDecoder().decode(asunto[position])), String(c.doFinal(Base64.getDecoder().decode(pass[position]))), position.toString()))
                         }
                         adapter.upgrade(elementos)
-                        pass_db.asunto.clear()
-                        pass_db.pass.clear()
-                        pass_db.iv.clear()
+                        asunto.clear()
+                        pass.clear()
+                        iv.clear()
                     }catch (e: Throwable){
                         bye("Fatal error")
                         val manage = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -241,7 +246,7 @@ class ManageActivity : AppCompatActivity() {
                     val ks = KeyStore.getInstance("AndroidKeyStore")
                     ks.load(null)
                     val c = Cipher.getInstance("AES/GCM/NoPadding")
-                    c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("ali", ""), null))
+                    c.init(Cipher.ENCRYPT_MODE, ks.getKey(ali, null))
 
                     db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
                     elementos.add(manage_data(asunto, pass, elementos.size.toString()))
@@ -301,13 +306,9 @@ class ManageActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         resume = true
-        val mk = MasterKey.Builder(this)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        val pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        if (pref.getBoolean("where", false)){
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+
     }
 }

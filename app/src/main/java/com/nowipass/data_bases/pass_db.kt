@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE pass_db (id INTEGER PRIMARY KEY, asunto TEXT, password TEXT, iv TEXT)")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS pass_db (id INTEGER PRIMARY KEY, asunto TEXT, password TEXT, iv TEXT)")
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {

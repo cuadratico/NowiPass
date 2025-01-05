@@ -46,14 +46,21 @@ class ManagerFragment : Fragment() {
 
        // todo el codigo
 
+        val mk = MasterKey.Builder(requireContext())
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        var pref = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
         val boton = binding.manage
         val clock = binding.secureClock
-        val gen = gen()
+        if (pref.getString("aws", "") == ""){
+            clock.visibility = View.INVISIBLE
+        }else {
+            clock.visibility = View.VISIBLE
+        }
+        val gen = gen(requireContext())
         boton.setOnClickListener {
-            val mk = MasterKey.Builder(requireContext())
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            val pref = EncryptedSharedPreferences.create(requireContext(), "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+            pref = EncryptedSharedPreferences.create(requireContext(), "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
             val dialog = Dialog(requireContext())
             val view = LayoutInflater.from(requireContext()).inflate(R.layout.view_password, null)
@@ -62,17 +69,17 @@ class ManagerFragment : Fragment() {
             opor.text = pref.getString("opor", "3")
             val password = view.findViewById<AppCompatEditText>(R.id.input_pass)
 
-            if (pref.getBoolean("pass_exist", false) == false){
+            if (!pref.getBoolean("pass_exist", false)){
                 Toast.makeText(requireContext(), "Write whatever you want to generate your passwords", Toast.LENGTH_SHORT).show()
             }
 
             password.addTextChangedListener {dato ->
                 if (pref.getBoolean("pass_exist", false) == false){
-                    gen.gener(requireContext())
+                    gen.gener()
                     password.setText("")
                 }
                 if (dato!!.toList().size == 9){
-                    gen.recep(requireContext(), password, opor, requireActivity(), dialog)
+                    gen.recep(password, opor, requireActivity(), dialog)
                 }
 
             }
@@ -86,10 +93,7 @@ class ManagerFragment : Fragment() {
             val dialog = Dialog(requireContext())
             val view = LayoutInflater.from(requireContext()).inflate(R.layout.secure_question_interfaz, null)
 
-            val mk = MasterKey.Builder(requireContext())
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            val pref = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+            pref = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
             val opor = view.findViewById<TextView>(R.id.opor)
             val question = view.findViewById<TextView>(R.id.question)
@@ -98,7 +102,7 @@ class ManagerFragment : Fragment() {
             val go = view.findViewById<ShapeableImageView>(R.id.go)
 
             go.setOnClickListener {
-                gen.recep_answer(requireContext(), input_answer, opor, requireActivity(), dialog)
+                gen.recep_answer(input_answer, opor, requireActivity(), dialog)
             }
             dialog.setContentView(view)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

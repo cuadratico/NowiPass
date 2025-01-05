@@ -42,6 +42,7 @@ fun validity_duration(context: Context, tiempo: Int){
                 pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
                 pref.edit().putBoolean("aute", false).apply()
                 tim = 0
+                resume = false
                 scope.cancel()
             }
             delay(1000)
