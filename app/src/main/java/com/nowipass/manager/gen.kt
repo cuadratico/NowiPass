@@ -67,11 +67,6 @@ class gen(val context: Context) {
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
         boton.isEnabled = true
 
-        // eliminar para la version final
-        val manage = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("texto", password)
-        manage.setPrimaryClip(clip)
-
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
