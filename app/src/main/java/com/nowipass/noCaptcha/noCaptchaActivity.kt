@@ -141,4 +141,9 @@ class noCaptchaActivity : AppCompatActivity() {
             insets
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        finish()
+    }
 }

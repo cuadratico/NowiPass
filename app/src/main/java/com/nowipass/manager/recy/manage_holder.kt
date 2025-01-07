@@ -67,8 +67,9 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
         all.setOnClickListener {
 
             fun actualizar(){
+                all.isEnabled = false
                 upgrade_items = true
-                Toast.makeText(position.context, "Pleas, wait 1 secons", Toast.LENGTH_SHORT).show()
+                Toast.makeText(position.context, "Wait", Toast.LENGTH_SHORT).show()
                 all.isEnabled = true
             }
             val db = pass_db(position.context)
@@ -90,9 +91,8 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
             delete.setOnClickListener {
                 val posi = position.text.toString().toInt()
-                db.delete(posi + 1)
+                db.delete(posi)
                 elementos.removeAt(posi)
-                all.isEnabled = false
                 dialog.dismiss()
                 actualizar()
             }
@@ -110,7 +110,6 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("ali", ""), null))
                 db.update(position.text.toString().toInt(), Base64.getEncoder().withoutPadding().encodeToString(input_a.text.toString().toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(password.text.toString().toByteArray())), Base64.getEncoder().encodeToString(c.iv))
                 elementos[position.text.toString().toInt()] = manage_data(input_a.text.toString(), input_p.text.toString(), position.text.toString())
-                all.isEnabled = false
                 dialog.dismiss()
                 actualizar()
             }

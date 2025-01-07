@@ -46,12 +46,10 @@ import com.nowipass.MainActivity
 import com.nowipass.R
 import com.nowipass.activitis
 import com.nowipass.data_bases.pass_db
-import com.nowipass.data_bases.sesion_db
 import com.nowipass.entropia
 import com.nowipass.manager.recy.elementos
 import com.nowipass.manager.recy.manage_adapter
 import com.nowipass.manager.recy.manage_data
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 import com.nowipass.data_bases.pass_db.Companion.asunto
@@ -60,7 +58,6 @@ import com.nowipass.data_bases.pass_db.Companion.iv
 import com.nowipass.data_bases.pass_db.Companion.pass
 import kotlinx.coroutines.delay
 import java.security.KeyStore
-import java.time.LocalDateTime
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -106,11 +103,7 @@ class ManageActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch{
-
-            var tiempo = 0
-
             while (true){
-                tiempo ++
                 if (upgrade_items) {
                     upgrade_items = false
                     adapter.upgrade(elementos)
@@ -131,9 +124,7 @@ class ManageActivity : AppCompatActivity() {
                     question = list?.getItemAtPosition(position).toString()
                 }
 
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-
-                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {}
 
             })
             val input = view.findViewById<AppCompatEditText>(R.id.input_answer)
@@ -270,6 +261,7 @@ class ManageActivity : AppCompatActivity() {
 
                         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                             Toast.makeText(applicationContext, "It seems there was an error", Toast.LENGTH_LONG).show()
+                            dialog.dismiss()
                         }
                     }).authenticate(promt)
                 }else {
@@ -299,14 +291,13 @@ class ManageActivity : AppCompatActivity() {
         val pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         pref.edit().putBoolean("where", false).apply()
         elementos.clear()
-        if (activitis == 0){
+        if (activitis == 0) {
             extraccion(this)
         }
     }
     override fun onPause() {
         super.onPause()
         resume = true
-
         startActivity(Intent(this, MainActivity::class.java))
         finish()
 

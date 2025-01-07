@@ -75,6 +75,7 @@ class sesionActivity : AppCompatActivity() {
             time.clear()
             succes_list.clear()
             vectores.clear()
+            autentificador_sesion = false
 
         }else {
             onPause()
@@ -106,10 +107,15 @@ class sesionActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        val mk = MasterKey.Builder(this)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
         sesiones.clear()
         activitis -= 1
 
-        if (activitis == 0){
+        if (activitis == 0 && pref.getBoolean("aute", false)){
             extraccion(this)
         }
     }

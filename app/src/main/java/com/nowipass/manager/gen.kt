@@ -12,7 +12,9 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
+import android.util.Range
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -25,6 +27,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.nowipass.MainActivity
 import com.nowipass.activitis
+import com.nowipass.data_bases.pass_db
 import com.nowipass.data_bases.sesion_db
 import com.nowipass.sesion.sesionActivity
 import java.security.KeyStore
@@ -37,21 +40,8 @@ import kotlin.random.Random
 
 class gen(val context: Context) {
 
-    fun finish(activity: Activity){
-        val mk = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        val pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-
-        pref.edit().putBoolean("inactive", true).apply()
-
-        Toast.makeText(context, "You have no more attempts left", Toast.LENGTH_SHORT).show()
-        activity.finishAffinity()
-
-    }
-
     @SuppressLint("NewApi")
-    fun gener(){
+    fun gener(boton: ImageView){
         val numero = Random.nextInt(0, 9)
         var password = ""
         for (valor in 0..9){
@@ -72,8 +62,10 @@ class gen(val context: Context) {
             }
         }
 
+        boton.isEnabled = false
         Toast.makeText(context, "Prepare to capture the screen", Toast.LENGTH_LONG).show()
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
+        boton.isEnabled = true
 
         // eliminar para la version final
         val manage = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -103,11 +95,12 @@ class gen(val context: Context) {
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        val pref  = EncryptedSharedPreferences.create(context, "ap", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pref  = EncryptedSharedPreferences.create(context, "as", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pre = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val hash = MessageDigest.getInstance("SHA256")
 
-        if (ks.getKey(password.split(password[5])[0], null) != null || Base64.getEncoder().withoutPadding().encodeToString(hash.digest(password.split(password[4])[1].toByteArray())) == pref.getString("hash", "")){
-            if (pref.getBoolean("question_exist", false)){
+        if (ks.getKey(password.split(password[5])[0], null) != null && Base64.getEncoder().withoutPadding().encodeToString(hash.digest(password.split(password[4])[1].toByteArray())) == pref.getString("hash", "")){
+            if (pre.getBoolean("question_exist", false)){
                 sesion_register(1, mk)
             }
             val intent = Intent(context, ManageActivity::class.java)
@@ -116,17 +109,11 @@ class gen(val context: Context) {
             dialog.dismiss()
             activity.finish()
         }else {
-            if (pref.getBoolean("question_exist", false)){
+            if (pre.getBoolean("question_exist", false)){
                 sesion_register(0 ,mk)
             }
-            if (opor.text.toString().toInt() <= 0){
-                pref.edit().putString("opor", "0").apply()
-                finish(activity)
-            }else {
-                opor.text = (opor.text.toString().toInt() - 1).toString()
-                pref.edit().putString("opor", opor.text.toString()).apply()
-                pass.setText("")
-            }
+            pass.setText("")
+            oportunidades(context, opor, activity)
         }
 
     }
@@ -137,13 +124,8 @@ class gen(val context: Context) {
         val ks = KeyStore.getInstance("AndroidKeyStore")
         ks.load(null)
 
-        val mk = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
 
-        val pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-
-        if (ks.getKey("Nowi", null) != null){
+        if (ks.getKey(valor.text.toString(), null) != null){
             val intent = Intent(context, sesionActivity::class.java)
                 .putExtra("aws", valor.text.toString())
 
@@ -151,15 +133,8 @@ class gen(val context: Context) {
             activity.finish()
             dialog.dismiss()
         }else {
-            Toast.makeText(context, "la clave no existe", Toast.LENGTH_LONG).show()
-            if (opor.text.toString().toInt() > 0){
-                opor.text = (opor.text.toString().toInt() - 1).toString()
-                pref.edit().putString("opor", opor.text.toString()).apply()
-                valor.setText("")
-            }else {
-                pref.edit().putString("opor", "0").apply()
-                finish(activity)
-            }
+            valor.setText("")
+            oportunidades(context, opor, activity)
         }
     }
 
@@ -177,6 +152,43 @@ class gen(val context: Context) {
         sesion.put(Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(LocalDateTime.now().toString().split("T").joinToString("-").toByteArray())), exito, Base64.getEncoder().withoutPadding().encodeToString(c.iv))
     }
 
+}
+
+fun finish(context:Context, activity: Activity, all: Boolean = false){
+    val sesion = sesion_db(context)
+    sesion.delete()
+    val mk = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+    var pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+    pref.edit().clear().apply()
+    pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+    pref.edit().clear().apply()
+
+    pref.edit().putBoolean("inactive", true).apply()
+
+    if (all){
+        val pass_db = pass_db(context)
+        pass_db.drop()
+    }
+    Toast.makeText(context, "Your information is secure", Toast.LENGTH_SHORT).show()
+    activity.finishAffinity()
+
+}
+
+fun oportunidades(context: Context, opor: TextView, activity: Activity){
+    opor.text = (opor.text.toString().toInt() - 1).toString()
+    val mk = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+    val pref = EncryptedSharedPreferences.create(context, "ap", mk,  EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
+    if (opor.text.toString().toInt() <= 0 && opor.text.toString().toInt() > 3){
+        pref.edit().putString("opor", "0").apply()
+        finish(context, activity)
+    }else {
+        pref.edit().putString("opor", opor.text.toString()).apply()
+    }
 }
 
 

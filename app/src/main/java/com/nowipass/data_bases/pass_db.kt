@@ -13,6 +13,11 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     }
 
 
+    fun drop(){
+        val db = this.writableDatabase
+        db.execSQL("DROP TABLE pass_db")
+    }
+
     fun put(id: Int, asunto: String, password: String, iv: String){
         val db = this.writableDatabase
         db.execSQL("INSERT INTO pass_db (id, asunto, password, iv) VALUES (?, ?, ?, ?)", arrayOf(id, asunto, password, iv))

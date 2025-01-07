@@ -2,6 +2,7 @@ package com.nowipass.manager
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -53,6 +54,7 @@ class ManagerFragment : Fragment() {
 
         val boton = binding.manage
         val clock = binding.secureClock
+        val padlock = binding.finish
         if (pref.getString("aws", "") == ""){
             clock.visibility = View.INVISIBLE
         }else {
@@ -69,15 +71,12 @@ class ManagerFragment : Fragment() {
             opor.text = pref.getString("opor", "3")
             val password = view.findViewById<AppCompatEditText>(R.id.input_pass)
 
-            if (!pref.getBoolean("pass_exist", false)){
-                Toast.makeText(requireContext(), "Write whatever you want to generate your passwords", Toast.LENGTH_SHORT).show()
+            if (pref.getBoolean("pass_exist", false)){
+                gen.gener(boton)
+                dialog.dismiss()
             }
 
             password.addTextChangedListener {dato ->
-                if (pref.getBoolean("pass_exist", false) == false){
-                    gen.gener()
-                    password.setText("")
-                }
                 if (dato!!.toList().size == 9){
                     gen.recep(password, opor, requireActivity(), dialog)
                 }
@@ -107,6 +106,16 @@ class ManagerFragment : Fragment() {
             dialog.setContentView(view)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
+        }
+
+        padlock.setOnClickListener {
+            val alertD = AlertDialog.Builder(requireContext())
+                .setTitle("By continuing you will delete all your NowiPass information")
+                .setPositiveButton("continue") { _, _ ->
+                    finish(requireContext(), requireActivity(), true)
+                }
+                .setNegativeButton("cancel"){_, _ ->}
+            alertD.show()
         }
         return root
     }
