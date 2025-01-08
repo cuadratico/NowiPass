@@ -9,6 +9,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings.Secure
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
@@ -37,11 +38,13 @@ import javax.crypto.KeyGenerator
 import java.util.Base64
 import javax.crypto.Cipher
 import kotlin.random.Random
+import java.security.SecureRandom
+import javax.crypto.SecretKey
 
 class gen(val context: Context) {
 
     @SuppressLint("NewApi")
-    fun gener(boton: ImageView){
+    fun gener(){
         val numero = Random.nextInt(0, 9)
         var password = ""
         for (valor in 0..9){
@@ -62,11 +65,8 @@ class gen(val context: Context) {
             }
         }
 
-        boton.isEnabled = false
         Toast.makeText(context, "Prepare to capture the screen", Toast.LENGTH_LONG).show()
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
-        boton.isEnabled = true
-
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()

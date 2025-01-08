@@ -1,6 +1,5 @@
 package com.nowipass.manager
 
-import android.util.Log
 import com.nowipass.Provier_local
 
 class pass_gen {

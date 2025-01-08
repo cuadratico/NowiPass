@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,7 +47,7 @@ class sesionActivity : AppCompatActivity() {
         activitis ++
 
         val recy = findViewById<RecyclerView>(R.id.recy)
-        val delet = findViewById<ShapeableImageView>(R.id.delete)
+        val delet = findViewById<ConstraintLayout>(R.id.delete)
         val info = findViewById<TextView>(R.id.info)
         info.visibility = View.INVISIBLE
         val adapter = sesion_adapter(sesiones)

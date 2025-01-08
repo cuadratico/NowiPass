@@ -20,12 +20,16 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.android.material.imageview.ShapeableImageView
 import com.nowipass.MainActivity
 import com.nowipass.R
 import com.nowipass.databinding.FragmentManagerBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ManagerFragment : Fragment() {
 
@@ -71,9 +75,20 @@ class ManagerFragment : Fragment() {
             opor.text = pref.getString("opor", "3")
             val password = view.findViewById<AppCompatEditText>(R.id.input_pass)
 
-            if (pref.getBoolean("pass_exist", false)){
-                gen.gener(boton)
-                dialog.dismiss()
+            if (!pref.getBoolean("pass_exist", false)){
+                boton.isEnabled = false
+                gen.gener()
+                lifecycleScope.launch{
+                    for (i in 0..7){
+                        delay(1000)
+                    }
+                    boton.isEnabled = true
+                    Toast.makeText(requireContext(), "You can continue now", Toast.LENGTH_SHORT).show()
+                }
+            }else {
+                dialog.setContentView(view)
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.show()
             }
 
             password.addTextChangedListener {dato ->
@@ -83,9 +98,7 @@ class ManagerFragment : Fragment() {
 
             }
 
-            dialog.setContentView(view)
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog.show()
+
         }
 
         clock.setOnClickListener {
