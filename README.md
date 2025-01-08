@@ -1,5 +1,5 @@
 
-![Logo](https://raw.githubusercontent.com/cuadratico/NowiPass/refs/heads/master/app/src/main/res/mipmap-xxxhdpi/logo_nowipass.webp?token=GHSAT0AAAAAAC22WSNGVKUOCT2TGZWE4RU2Z2HMDCQ)
+![Logo](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/icon.webp)
 
 
 # NowiPass
@@ -14,7 +14,7 @@
 
 - NowiPass is oriented towards the security and freedom of the user, that is why the information is only stored locally and the user has the possibility of completely deleting it whenever they want.
 
-
+- NowiPass also stores your session logs locally since NowiPass does not have internet access, this log is private and only you will be able to see it.
 
 
 
@@ -23,3 +23,16 @@
 **Tools:** AndroidKeyStore, Cipher, AES-256, SHA-256, MessageDigest, EncryptedSharedPreference, SharedPreference, Base64, Kotlin.
 
 **Data Base:** SQLite
+## Screenshots
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_1.png)
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_2.png)
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_3.png)
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_4.png)
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_5.png)
+
+![App Screenshot](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_6.png)
