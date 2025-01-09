@@ -1,6 +1,7 @@
 package com.nowipass
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -30,6 +31,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.biometric.BiometricManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -41,8 +43,6 @@ import com.nowipass.databinding.ActivityMainBinding
 import com.nowipass.generator.adapter_switches
 import com.nowipass.generator.switches_provier
 import com.nowipass.generator.total
-import com.nowipass.manager.comprobacion
-import com.nowipass.manager.extraccion
 import java.text.Normalizer.Form
 
 lateinit var password: TextView
@@ -107,6 +107,17 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL) != BiometricManager.BIOMETRIC_SUCCESS){
+            val alert = AlertDialog.Builder(this)
+                .setTitle("Run a setting to configure a screen lock (Pin, pattern, biometrics)")
+                .setPositiveButton("Continue"){_, _ ->
+                    finishAffinity()
+                    Toast.makeText(this, "Run a setting to configure a screen lock (Pin, pattern, biometrics)", Toast.LENGTH_LONG).show()
+                }
+                .setCancelable(false)
+            alert.show()
+        }
 
         navView.setOnItemSelectedListener {item ->
             if (item.itemId == R.id.navigation_qualifier){
@@ -199,12 +210,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         activitis -= 1
-        val mk = MasterKey.Builder(this)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        val pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        if (activitis == 0 && pref.getBoolean("aute", false)){
-            extraccion(this)
-        }
     }
 }

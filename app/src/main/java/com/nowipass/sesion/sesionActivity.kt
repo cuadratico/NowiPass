@@ -27,7 +27,6 @@ import com.nowipass.data_bases.sesion_db.Companion.autentificador_sesion
 import com.nowipass.data_bases.sesion_db.Companion.succes_list
 import com.nowipass.data_bases.sesion_db.Companion.time
 import com.nowipass.data_bases.sesion_db.Companion.vectores
-import com.nowipass.manager.extraccion
 import com.nowipass.sesion.recy.sesion_adapter
 import com.nowipass.sesion.recy.sesion_data
 import com.nowipass.sesion.recy.sesiones
@@ -112,17 +111,7 @@ class sesionActivity : AppCompatActivity() {
     @SuppressLint("NewApi")
     override fun onDestroy() {
         super.onDestroy()
-
-        val mk = MasterKey.Builder(this)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        val pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-
         sesiones.clear()
         activitis -= 1
-
-        if (activitis == 0 && pref.getBoolean("aute", false)){
-            extraccion(this)
-        }
     }
 }

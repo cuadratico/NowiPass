@@ -63,7 +63,7 @@ fun extraccion(context: Context){
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun comprobacion(context: Context){
+fun comprobacion(context: Context, inApp: Boolean = false){
     val mk = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -79,13 +79,21 @@ fun comprobacion(context: Context){
 
         val time_validity = pref.getInt("validity_time", 0)
 
-        pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
+        val operation = ((tiempo_actual[1].toInt() - 1) * 60 + tiempo_actual[2].split(".")[0].toInt()) - ((tiempo[1].toInt() - 1) * 60 + tiempo[2].split(".")[0].toInt())
 
-        if ((fecha[0].toInt() - fecha_actual[0].toInt()) == 0 && (fecha[1].toInt() - fecha_actual[1].toInt()) == 0 && (fecha[2].toInt() - fecha_actual[2].toInt()) == 0 && (tiempo[0].toInt() - tiempo_actual[0].toInt()) == 0 && ((tiempo_actual[1].toInt() - 1) * 60 + tiempo_actual[2].split(".")[0].toInt()) - ((tiempo[1].toInt() - 1) * 60 + tiempo[2].split(".")[0].toInt()) < time_validity){
+        if ((fecha[0].toInt() - fecha_actual[0].toInt()) == 0 && (fecha[1].toInt() - fecha_actual[1].toInt()) == 0 && (fecha[2].toInt() - fecha_actual[2].toInt()) == 0 && (tiempo[0].toInt() - tiempo_actual[0].toInt()) == 0 && operation < time_validity){
             pref.edit().putBoolean("aute", true).commit()
-            validity_duration(context, time_validity)
+            if (!inApp) {
+                validity_duration(context, time_validity - operation)
+            }else {
+                Toast.makeText(context, "You have ${time_validity - operation}  seconds to do whatever you want.", Toast.LENGTH_LONG).show()
+            }
         }else {
+            pref.edit().putString("time_now", "").commit()
+            pref.edit().putInt("validity_time", 0).commit()
+            pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
             pref.edit().putBoolean("aute", false).commit()
         }
     }

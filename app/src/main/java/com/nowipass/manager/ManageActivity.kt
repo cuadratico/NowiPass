@@ -96,10 +96,8 @@ class ManageActivity : AppCompatActivity() {
 
         if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL or BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS){
             pref.edit().putBoolean("where", true).apply()
+            comprobacion(this, resume)
 
-            if (!resume) {
-                comprobacion(this)
-            }
         }else {
             bye("You need to activate a pin or biometric data to continue")
         }
@@ -294,20 +292,18 @@ class ManageActivity : AppCompatActivity() {
         val mk = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        var pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        pref.edit().putString("ali", "").apply()
-        pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-        pref.edit().putBoolean("where", false).apply()
+        val pre = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        pre.edit().putBoolean("where", false).apply()
+        val pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         elementos.clear()
-        if (activitis == 0) {
+        if (pref.getBoolean("aute", false) && pre.getString("time_now", "") == "") {
             extraccion(this)
         }
     }
     override fun onPause() {
         super.onPause()
-        resume = true
         startActivity(Intent(this, MainActivity::class.java))
         finish()
-
+        resume = true
     }
 }
