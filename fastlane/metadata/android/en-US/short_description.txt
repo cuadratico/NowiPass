@@ -1,1 +1,1 @@
-A password manager where you are the only one who has access to your passwords.
+A password manager where you are the only one who has access to your passwords
