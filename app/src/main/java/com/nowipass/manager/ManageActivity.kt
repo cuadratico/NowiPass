@@ -151,6 +151,7 @@ class ManageActivity : AppCompatActivity() {
                 gen.sesion_register(1, mk)
                 dialog.dismiss()
             }
+            dialog.setCancelable(false)
             dialog.setContentView(view)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
