@@ -1,7 +1,7 @@
-< i > NowiPass </ i > is a secure password manager that uses AES to encrypt your passwords with high security.
+<i> NowiPass </i> is a secure password manager that uses AES to encrypt your passwords with high security.
 
-< b > Additional features: </ b >
+<b> Additional features: </b>
 
-- < i > NowiPass </ i > does not have Internet access.
-- < i > NowiPass </ i > stores your session logs so you always know who is logged in.
-- < i > NowiPass </ i > is a manager where only you can manage your passwords.
+- <i> NowiPass </i> does not have Internet access.
+- <i> NowiPass </i> stores your session logs so you always know who is logged in.
+- <i> NowiPass </i> is a manager where only you can manage your passwords.

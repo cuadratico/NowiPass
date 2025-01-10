@@ -1,5 +1,5 @@
 
-![Logo](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/icon.webp)
+![Logo](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/icon.png)
 
 
 # NowiPass
