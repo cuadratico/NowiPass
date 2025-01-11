@@ -67,15 +67,13 @@ class gen(val context: Context) {
 
         Toast.makeText(context, "Prepare to capture the screen", Toast.LENGTH_LONG).show()
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
-        val manage = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("texto", password)
-        manage.setPrimaryClip(clip)
+
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
         var pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
-        pref.edit().putString("hash", Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA256").digest(password.split(password[4])[1].toByteArray()))).apply()
+        pref.edit().putString("hash", Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA256").digest((password.split(password[4])[1]).toByteArray()))).apply()
 
         pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         pref.edit().putBoolean("pass_exist", true).apply()
@@ -96,8 +94,7 @@ class gen(val context: Context) {
         val pref  = EncryptedSharedPreferences.create(context, "as", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val pre = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val hash = MessageDigest.getInstance("SHA256")
-
-        if (ks.getKey(password.split(password[5])[0], null) != null && Base64.getEncoder().withoutPadding().encodeToString(hash.digest(password.split(password[4])[1].toByteArray())) == pref.getString("hash", "")){
+        if (ks.getKey(password.split(password[5])[0], null) != null && Base64.getEncoder().withoutPadding().encodeToString(hash.digest((password.split(password[4])[1]).toByteArray())) == pref.getString("hash", "")){
             if (pre.getBoolean("question_exist", false)){
                 sesion_register(1, mk)
             }
@@ -181,7 +178,7 @@ fun oportunidades(context: Context, opor: TextView, activity: Activity){
         .build()
     val pref = EncryptedSharedPreferences.create(context, "ap", mk,  EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
-    if (opor.text.toString().toInt() <= 0 && opor.text.toString().toInt() > 3){
+    if (opor.text.toString().toInt() <= 0 || opor.text.toString().toInt() > 3){
         pref.edit().putString("opor", "0").apply()
         finish(context, activity)
     }else {

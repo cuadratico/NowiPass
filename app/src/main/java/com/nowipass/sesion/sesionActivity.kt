@@ -72,21 +72,20 @@ class sesionActivity : AppCompatActivity() {
 
                 sesiones.add(sesion_data(String(c.doFinal(Base64.getDecoder().decode(time[position]))), exitos_list[succes_list[position]], position.toString()))
             }
-            adapter.upgrade(sesiones)
+            adapter.upgrade()
             time.clear()
             succes_list.clear()
             vectores.clear()
             autentificador_sesion = false
 
         }else {
-            onPause()
-            Toast.makeText(this, "No session records", Toast.LENGTH_SHORT).show()
+            info.visibility = View.VISIBLE
         }
 
         delet.setOnClickListener {
             sesiones_db.delete()
             sesiones.clear()
-            adapter.upgrade(sesiones)
+            adapter.upgrade()
             delet.visibility = View.INVISIBLE
             info.visibility = View.VISIBLE
         }

@@ -30,6 +30,7 @@ import java.security.KeyStore
 import java.util.Base64
 import javax.crypto.Cipher
 import androidx.lifecycle.lifecycleScope
+import com.nowipass.manager.upgrade_what
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -66,8 +67,9 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
         all.setOnClickListener {
 
-            fun actualizar(){
+            fun actualizar(valor: Boolean = false){
                 all.isEnabled = false
+                upgrade_what = valor
                 upgrade_items = true
                 Toast.makeText(position.context, "Wait", Toast.LENGTH_SHORT).show()
                 all.isEnabled = true
@@ -94,7 +96,7 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 db.delete(posi)
                 elementos.removeAt(posi)
                 dialog.dismiss()
-                actualizar()
+                actualizar(true)
             }
 
             edit.setOnClickListener {

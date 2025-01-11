@@ -1,6 +1,7 @@
 package com.nowipass.manager.recy
 
 import android.app.Activity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -20,8 +21,13 @@ class manage_adapter(var list: List<manage_data>): RecyclerView.Adapter<manage_h
     }
 
 
-    fun upgrade(lista: List<manage_data>) {
-        this.list = lista
+    fun upgrade(upgra: Boolean = false) {
+        if (upgra) {
+            for (miembros in 0..elementos.size - 1) {
+                elementos[miembros].position = miembros.toString()
+            }
+        }
+        this.list = elementos
         notifyDataSetChanged()
     }
 

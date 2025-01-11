@@ -65,6 +65,7 @@ import javax.crypto.spec.GCMParameterSpec
 
 var tim = 0
 var upgrade_items = false
+var upgrade_what = false
 var resume = false
 class ManageActivity : AppCompatActivity() {
     @SuppressLint("NewApi", "MissingInflatedId")
@@ -84,7 +85,6 @@ class ManageActivity : AppCompatActivity() {
         val mk = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-
         var pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         pref.edit().putString("ali", ali).apply()
 
@@ -106,7 +106,8 @@ class ManageActivity : AppCompatActivity() {
             while (true){
                 if (upgrade_items) {
                     upgrade_items = false
-                    adapter.upgrade(elementos)
+                    adapter.upgrade(upgrade_what)
+                    upgrade_what = false
                 }
                 delay(1000)
             }
@@ -178,7 +179,7 @@ class ManageActivity : AppCompatActivity() {
                             c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv[position])))
                             elementos.add(manage_data(String(Base64.getDecoder().decode(asunto[position])), String(c.doFinal(Base64.getDecoder().decode(pass[position]))), position.toString()))
                         }
-                        adapter.upgrade(elementos)
+                        adapter.upgrade()
                         asunto.clear()
                         pass.clear()
                         iv.clear()
@@ -242,7 +243,7 @@ class ManageActivity : AppCompatActivity() {
 
                     db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
                     elementos.add(manage_data(asunto, pass, elementos.size.toString()))
-                    adapter.upgrade(elementos)
+                    adapter.upgrade()
 
                 }
 
