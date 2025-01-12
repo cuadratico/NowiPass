@@ -52,8 +52,6 @@ class sesionActivity : AppCompatActivity() {
         val adapter = sesion_adapter(sesiones)
         val ali = intent.extras?.getString("aws").orEmpty()
         val sesiones_db = sesion_db(this)
-
-
         recy.adapter = adapter
         recy.layoutManager = LinearLayoutManager(this)
 
@@ -79,6 +77,7 @@ class sesionActivity : AppCompatActivity() {
             autentificador_sesion = false
 
         }else {
+            delet.visibility = View.INVISIBLE
             info.visibility = View.VISIBLE
         }
 

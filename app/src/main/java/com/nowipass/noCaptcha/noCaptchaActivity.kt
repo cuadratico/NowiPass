@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -60,6 +61,7 @@ class noCaptchaActivity : AppCompatActivity() {
         var tiempo= 0
         val scope = CoroutineScope(Dispatchers.Main)
         fun dialog(){
+            Log.e("dialog", "dialog")
             val dialog = Dialog(this)
             val view = LayoutInflater.from(this).inflate(R.layout.no_captcha_block, null)
             val time = view.findViewById<TextView>(R.id.time)
@@ -144,6 +146,13 @@ class noCaptchaActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        finish()
+        val mk = MasterKey.Builder(this)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
+        if (pref.getBoolean("block", false)){
+            finish()
+        }
     }
 }

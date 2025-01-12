@@ -8,10 +8,10 @@ import android.util.Log
 
 class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS sesion_db (id INTEGER PRIMARY KEY AUTOINCREMENT, time TEXT, succes INTEGER, iv TEXT)")
+        db?.execSQL("CREATE TABLE sesion_db (id INTEGER PRIMARY KEY AUTOINCREMENT, time TEXT, succes INTEGER, iv TEXT)")
     }
 
-    override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
+    override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {
 
     }
 
@@ -22,7 +22,7 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
 
     fun delete(){
         val db = this.writableDatabase
-        db.execSQL("DROP TABLE sesion_db")
+        db.execSQL("DELETE FROM sesion_db")
     }
 
     fun get(){
