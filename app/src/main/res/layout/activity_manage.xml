@@ -8,6 +8,7 @@
     tools:context=".manager.ManageActivity">
 
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recy"
         android:layout_width="match_parent"
@@ -15,6 +16,15 @@
         tools:layout_editor_absoluteX="30dp"
         tools:layout_editor_absoluteY="32dp" />
 
+
+    <SearchView
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/bordes_blue2"
+        />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_pass"
         android:layout_width="80dp"

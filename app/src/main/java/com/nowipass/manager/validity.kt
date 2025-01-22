@@ -7,6 +7,7 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.ContentInfoCompat.Flags
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.nowipass.MainActivity
@@ -17,11 +18,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 
 fun validity_duration(context: Context, tiempo: Int){
-    val scope = CoroutineScope(Dispatchers.Main)
+    val scope = CoroutineScope(Dispatchers.IO)
 
     val mk = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -38,7 +40,9 @@ fun validity_duration(context: Context, tiempo: Int){
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     context.startActivity(intent)
                 }
-                Toast.makeText(context, "Your time is up", Toast.LENGTH_LONG).show()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Your time is up", Toast.LENGTH_LONG).show()
+                }
                 pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
                 pref.edit().putBoolean("aute", false).apply()
                 tim = 0

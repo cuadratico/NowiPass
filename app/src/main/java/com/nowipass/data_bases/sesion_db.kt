@@ -23,6 +23,7 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
     fun delete(){
         val db = this.writableDatabase
         db.execSQL("DELETE FROM sesion_db")
+        db.close()
     }
 
     fun get(){
@@ -42,6 +43,7 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
         }else {
             autentificador_sesion = false
         }
+        db.close()
     }
 
     companion object{

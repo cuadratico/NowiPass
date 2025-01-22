@@ -1,6 +1,7 @@
 package com.nowipass.manager
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -29,6 +30,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
+import android.widget.SearchView
+import androidx.appcompat.app.ActionBar
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -56,7 +59,9 @@ import com.nowipass.data_bases.pass_db.Companion.asunto
 import com.nowipass.data_bases.pass_db.Companion.autentificador_pass
 import com.nowipass.data_bases.pass_db.Companion.iv
 import com.nowipass.data_bases.pass_db.Companion.pass
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.security.KeyStore
 import java.util.Base64
 import javax.crypto.Cipher
@@ -75,10 +80,13 @@ class ManageActivity : AppCompatActivity() {
         activitis ++
         setContentView(R.layout.activity_manage)
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        supportActionBar?.setTitle("Manage")
         val add = findViewById<ConstraintLayout>(R.id.add_pass)
         val ali = intent.extras?.getString("alias").orEmpty()
+        val filter = findViewById<SearchView>(R.id.filter)
+        filter.visibility = View.INVISIBLE
         val recy = findViewById<RecyclerView>(R.id.recy)
-        val adapter = manage_adapter(elementos)
+        val adapter = manage_adapter(elementos, filter)
         recy.adapter = adapter
         recy.layoutManager = LinearLayoutManager(this)
 
@@ -95,18 +103,34 @@ class ManageActivity : AppCompatActivity() {
         }
 
         if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL or BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS){
-            pref.edit().putBoolean("where", true).apply()
+            pref.edit().putBoolean("where", true).commit()
             comprobacion(this, resume)
 
         }else {
             bye("You need to activate a pin or biometric data to continue")
         }
 
-        lifecycleScope.launch{
+        filter.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(text: String?): Boolean {
+                val new = elementos.filter {dato -> dato.asunto.contains(text.toString())}
+                adapter.upgrade(new)
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.toString().isEmpty()){
+                    adapter.upgrade(elementos)
+                }
+                return true
+            }
+        })
+
+        lifecycleScope.launch(Dispatchers.IO){
             while (true){
                 if (upgrade_items) {
                     upgrade_items = false
-                    adapter.upgrade(upgrade_what)
+                    withContext(Dispatchers.Main) {
+                        adapter.upgrade(elementos, upgrade_what)
+                    }
                     upgrade_what = false
                 }
                 delay(1000)
@@ -179,7 +203,7 @@ class ManageActivity : AppCompatActivity() {
                             c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv[position])))
                             elementos.add(manage_data(String(Base64.getDecoder().decode(asunto[position])), String(c.doFinal(Base64.getDecoder().decode(pass[position]))), position.toString()))
                         }
-                        adapter.upgrade()
+                        adapter.upgrade(elementos)
                         asunto.clear()
                         pass.clear()
                         iv.clear()
@@ -212,6 +236,9 @@ class ManageActivity : AppCompatActivity() {
                 }else {
                     recepcion()
                 }
+                if (elementos.size > 1){
+                    filter.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -243,7 +270,7 @@ class ManageActivity : AppCompatActivity() {
 
                     db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
                     elementos.add(manage_data(asunto, pass, elementos.size.toString()))
-                    adapter.upgrade()
+                    adapter.upgrade(elementos)
 
                 }
 
@@ -259,6 +286,9 @@ class ManageActivity : AppCompatActivity() {
                             validity_duration(applicationContext, 120)
                             dialog.dismiss()
                             pref.edit().putBoolean("aute", true).apply()
+                            if (elementos.size > 1){
+                                filter.visibility = View.VISIBLE
+                            }
                         }
 
                         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {

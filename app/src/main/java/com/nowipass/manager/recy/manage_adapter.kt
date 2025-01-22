@@ -3,11 +3,14 @@ package com.nowipass.manager.recy
 import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.nowipass.R
+import com.nowipass.data_bases.pass_db
 
-class manage_adapter(var list: List<manage_data>): RecyclerView.Adapter<manage_holder>() {
+class manage_adapter(var list: List<manage_data>, val fil: SearchView): RecyclerView.Adapter<manage_holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): manage_holder {
         return manage_holder(LayoutInflater.from(parent.context).inflate(R.layout.recy_manage_password, null))
     }
@@ -21,13 +24,17 @@ class manage_adapter(var list: List<manage_data>): RecyclerView.Adapter<manage_h
     }
 
 
-    fun upgrade(upgra: Boolean = false) {
-        if (upgra) {
-            for (miembros in 0..elementos.size - 1) {
-                elementos[miembros].position = miembros.toString()
-            }
+    fun upgrade(lista: List<manage_data>, upgra: Boolean = false) {
+        if (elementos.size > 1){
+            fil.visibility = View.VISIBLE
+        }else {
+            fil.visibility = View.INVISIBLE
         }
-        this.list = elementos
+        if (upgra){
+            val db = pass_db(fil.context)
+            db.recalibracion()
+        }
+        this.list = lista
         notifyDataSetChanged()
     }
 

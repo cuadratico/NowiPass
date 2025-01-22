@@ -43,6 +43,7 @@ class sesionActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_sesion)
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        supportActionBar?.setTitle("Sesion")
         activitis ++
 
         val recy = findViewById<RecyclerView>(R.id.recy)

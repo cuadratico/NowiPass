@@ -30,6 +30,8 @@ import java.security.KeyStore
 import java.util.Base64
 import javax.crypto.Cipher
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.nowipass.entropia
 import com.nowipass.manager.upgrade_what
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -48,7 +50,6 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
         password.text = data.password
         position.text = data.position
 
-        // Añadir un setOnLongClickLisener y un clickLisener
         all.setOnLongClickListener {
             val dialog = Dialog(position.context)
             val view = LayoutInflater.from(position.context).inflate(R.layout.see_the_password, null)
@@ -90,7 +91,11 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
             val add = view.findViewById<ShapeableImageView>(R.id.add_password)
             add.visibility = View.INVISIBLE
             val edit = view.findViewById<ConstraintLayout>(R.id.edit_pass)
-
+            val progreso = view.findViewById<LinearProgressIndicator>(R.id.progress)
+            entropia(input_p.text.toString(), progreso)
+            input_p.addTextChangedListener {dato ->
+                entropia(dato.toString(), progreso)
+            }
             delete.setOnClickListener {
                 val posi = position.text.toString().toInt()
                 db.delete(posi)
@@ -110,7 +115,7 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
                 val c = Cipher.getInstance("AES/GCM/NoPadding")
                 c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("ali", ""), null))
-                db.update(position.text.toString().toInt(), Base64.getEncoder().withoutPadding().encodeToString(input_a.text.toString().toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(password.text.toString().toByteArray())), Base64.getEncoder().encodeToString(c.iv))
+                db.update(position.text.toString().toInt(), Base64.getEncoder().withoutPadding().encodeToString(input_a.text.toString().toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(input_p.text.toString().toByteArray())), Base64.getEncoder().encodeToString(c.iv))
                 elementos[position.text.toString().toInt()] = manage_data(input_a.text.toString(), input_p.text.toString(), position.text.toString())
                 dialog.dismiss()
                 actualizar()

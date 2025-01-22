@@ -1,8 +1,10 @@
 package com.nowipass.noCaptcha
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.shapes.Shape
@@ -13,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.security.KeyStore
 import javax.crypto.KeyGenerator
 import kotlin.random.Random
@@ -44,6 +48,7 @@ class noCaptchaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_no_captcha)
 
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        supportActionBar?.setTitle("NoCaptcha")
         val ks = KeyStore.getInstance("AndroidKeyStore")
         ks.load(null)
         val mk = MasterKey.Builder(this)
@@ -66,16 +71,18 @@ class noCaptchaActivity : AppCompatActivity() {
             val view = LayoutInflater.from(this).inflate(R.layout.no_captcha_block, null)
             val time = view.findViewById<TextView>(R.id.time)
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 for (i in 59.downTo(0)){
-                    if (i == 0){
-                        dialog.dismiss()
-                        pref.edit().putBoolean("block", false).apply()
-                        recreate()
-                    }else {
-                        delay(1000)
-                        time.text = i.toString()
+                    withContext(Dispatchers.Main) {
+                        if (i == 0) {
+                            dialog.dismiss()
+                            pref.edit().putBoolean("block", false).apply()
+                            recreate()
+                        } else {
+                            time.text = i.toString()
+                        }
                     }
+                    delay(1000)
                 }
             }
             dialog.setContentView(view)
@@ -87,16 +94,19 @@ class noCaptchaActivity : AppCompatActivity() {
             val display = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(display)
 
-            fondo_layout.x = Random.nextInt(0, (display.xdpi - 10).toInt()).toFloat()
+            fondo_layout.x = Random.nextInt(100, (display.xdpi - 10).toInt()).toFloat()
             fondo_layout.y = Random.nextInt(500, display.heightPixels - 120).toFloat()
 
         }
 
         if (pref.getBoolean("inactive", false)){
+            Toast.makeText(this, "Your information has been destroyed", Toast.LENGTH_SHORT).show()
             finishAffinity()
         }else if (!pref.getBoolean("block", false)){
-            actualizar()
-            scope.launch{
+            fondo_layout.post {
+                actualizar()
+            }
+            scope.launch(Dispatchers.IO){
                 while(true){
                     tiempo ++
                     delay(1000)
@@ -105,7 +115,6 @@ class noCaptchaActivity : AppCompatActivity() {
         }else {
             dialog()
         }
-
 
         main.setOnClickListener {
             toques ++

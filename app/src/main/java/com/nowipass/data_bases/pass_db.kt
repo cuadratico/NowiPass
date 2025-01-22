@@ -3,6 +3,8 @@ package com.nowipass.data_bases
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import com.nowipass.manager.recy.elementos
 
 class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -21,16 +23,29 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     fun put(id: Int, asunto: String, password: String, iv: String){
         val db = this.writableDatabase
         db.execSQL("INSERT INTO pass_db (id, asunto, password, iv) VALUES (?, ?, ?, ?)", arrayOf(id, asunto, password, iv))
+        db.close()
     }
 
     fun update(id: Int, asunto: String, password: String, iv:String){
         val db = this.writableDatabase
         db.execSQL("UPDATE pass_db SET asunto = ?, password = ?, iv = ? WHERE id = ?", arrayOf(asunto, password, iv, id))
+        db.close()
+    }
+
+    fun recalibracion(){
+        val db = this.writableDatabase
+
+        for (valores in 0..elementos.size - 1){
+            db.execSQL("UPDATE pass_db SET id = ? WHERE id = ?", arrayOf(valores, elementos[valores].position))
+            elementos[valores].position = valores.toString()
+        }
+        db.close()
     }
 
     fun delete(id: Int){
         val db = this.writableDatabase
         db.execSQL("DELETE FROM pass_db WHERE id = ?", arrayOf(id))
+        db.close()
     }
 
     fun get(){
@@ -50,6 +65,8 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
         }else {
             autentificador_pass = false
         }
+        db.close()
+        Log.e("db", "cerrada")
     }
 
     companion object{
