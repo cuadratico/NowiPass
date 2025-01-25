@@ -118,7 +118,7 @@ class ManageActivity : AppCompatActivity() {
             }
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.toString().isEmpty()){
-                    filter.setQuery("", true)
+                    adapter.upgrade(elementos)
                 }
                 return true
             }
