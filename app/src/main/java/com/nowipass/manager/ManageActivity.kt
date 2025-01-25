@@ -118,7 +118,7 @@ class ManageActivity : AppCompatActivity() {
             }
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.toString().isEmpty()){
-                    adapter.upgrade(elementos)
+                    filter.setQuery("", true)
                 }
                 return true
             }
@@ -129,7 +129,7 @@ class ManageActivity : AppCompatActivity() {
                 if (upgrade_items) {
                     upgrade_items = false
                     withContext(Dispatchers.Main) {
-                        adapter.upgrade(elementos, upgrade_what)
+                        adapter.upgrade(elementos, upgrade_items)
                     }
                     upgrade_what = false
                 }
