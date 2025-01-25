@@ -68,12 +68,6 @@ class gen(val context: Context) {
         Toast.makeText(context, "Prepare to capture the screen", Toast.LENGTH_LONG).show()
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
 
-        // modificar
-
-        val manage = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("chat", password)
-        manage.setPrimaryClip(clip)
-
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
