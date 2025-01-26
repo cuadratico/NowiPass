@@ -30,6 +30,7 @@ import com.nowipass.databinding.FragmentManagerBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ManagerFragment : Fragment() {
 
@@ -65,6 +66,7 @@ class ManagerFragment : Fragment() {
             clock.visibility = View.VISIBLE
         }
         val gen = gen(requireContext())
+
         boton.setOnClickListener {
             pref = EncryptedSharedPreferences.create(requireContext(), "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
@@ -76,23 +78,26 @@ class ManagerFragment : Fragment() {
             val password = view.findViewById<AppCompatEditText>(R.id.input_pass)
 
             if (!pref.getBoolean("pass_exist", false)){
+                boton.contentDescription = "Wait for the password to be created"
                 boton.isEnabled = false
                 gen.gener()
-                lifecycleScope.launch{
+                lifecycleScope.launch(Dispatchers.Main){
                     for (i in 0..7){
                         delay(1000)
                     }
                     boton.isEnabled = true
                     Toast.makeText(requireContext(), "You can continue now", Toast.LENGTH_SHORT).show()
+
                 }
             }else {
+                boton.contentDescription = "Write your password"
                 dialog.setContentView(view)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 dialog.show()
             }
 
             password.addTextChangedListener {dato ->
-                if (dato!!.toList().size == 9){
+                if (dato!!.toList().size == 9 && dato.toString().trim().isNotEmpty()){
                     gen.recep(password, opor, requireActivity(), dialog)
                 }
 
@@ -100,6 +105,8 @@ class ManagerFragment : Fragment() {
 
 
         }
+
+        clock.contentDescription = "Check your account login logs"
 
         clock.setOnClickListener {
             val dialog = Dialog(requireContext())
@@ -120,6 +127,8 @@ class ManagerFragment : Fragment() {
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
         }
+
+        padlock.contentDescription = "Delete all information from NowiPass"
 
         padlock.setOnClickListener {
             val alertD = AlertDialog.Builder(requireContext())

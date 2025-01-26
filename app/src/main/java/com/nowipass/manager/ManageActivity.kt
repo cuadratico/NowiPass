@@ -158,23 +158,31 @@ class ManageActivity : AppCompatActivity() {
             val opor = view.findViewById<TextView>(R.id.opor)
             opor.visibility = View.INVISIBLE
             val go = view.findViewById<ShapeableImageView>(R.id.go)
+
+            go.contentDescription = "This button lets you choose the answer to the question"
+
             go.setOnClickListener {
-                pref.edit().putBoolean("question_exist", true).apply()
-                pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-                pref.edit().putString("question", question).apply()
-                pref.edit().putString("aws", input.text.toString()).apply()
+                if (input.text.toString().trim().isNotEmpty()) {
+                    pref.edit().putBoolean("question_exist", true).apply()
+                    pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+                    pref.edit().putString("question", question).apply()
+                    pref.edit().putString("aws", input.text.toString()).apply()
 
-                val kgen = KeyGenParameterSpec.Builder(input.text.toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .build()
+                    val kgen = KeyGenParameterSpec.Builder(input.text.toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                        .build()
 
-                val kg = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-                kg.init(kgen)
-                kg.generateKey()
+                    val kg = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+                    kg.init(kgen)
+                    kg.generateKey()
 
-                gen.sesion_register(1, mk)
-                dialog.dismiss()
+                    gen.sesion_register(1, mk)
+                    dialog.dismiss()
+                }else {
+                    Toast.makeText(this, "you have to write something", Toast.LENGTH_SHORT).show()
+                    input.setText("")
+                }
             }
             dialog.setCancelable(false)
             dialog.setContentView(view)
@@ -242,6 +250,8 @@ class ManageActivity : AppCompatActivity() {
             }
         }
 
+        add.contentDescription = "Add passwords"
+
         add.setOnClickListener {
             val dialog = Dialog(this)
             val view = LayoutInflater.from(this).inflate(R.layout.add_edit_password_manage, null)
@@ -258,6 +268,8 @@ class ManageActivity : AppCompatActivity() {
                 entropia(valor.toString(), progress)
             }
 
+            ad.contentDescription = "Add the password and subject"
+
             ad.setOnClickListener {
                 pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
@@ -273,7 +285,6 @@ class ManageActivity : AppCompatActivity() {
                     adapter.upgrade(elementos)
 
                 }
-
                 if (!pref.getBoolean("aute", false)){
                     val promt = BiometricPrompt.PromptInfo.Builder()
                         .setTitle("Authenticate yourself")
@@ -286,7 +297,7 @@ class ManageActivity : AppCompatActivity() {
                             validity_duration(applicationContext, 120)
                             dialog.dismiss()
                             pref.edit().putBoolean("aute", true).apply()
-                            if (elementos.size > 1){
+                            if (elementos.size > 1) {
                                 filter.visibility = View.VISIBLE
                             }
                         }

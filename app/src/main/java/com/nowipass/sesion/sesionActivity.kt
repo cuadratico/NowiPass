@@ -82,6 +82,8 @@ class sesionActivity : AppCompatActivity() {
             info.visibility = View.VISIBLE
         }
 
+        delet.contentDescription = "Delete all your session logs"
+
         delet.setOnClickListener {
             sesiones_db.delete()
             sesiones.clear()

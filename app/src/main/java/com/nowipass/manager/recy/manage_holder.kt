@@ -66,6 +66,8 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
             true
         }
 
+        all.contentDescription = "Check your password number ${position.text}"
+
         all.setOnClickListener {
 
             fun actualizar(valor: Boolean = false){
@@ -96,6 +98,9 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
             input_p.addTextChangedListener {dato ->
                 entropia(dato.toString(), progreso)
             }
+
+            delete.contentDescription = "Delete your password"
+
             delete.setOnClickListener {
                 val posi = position.text.toString().toInt()
                 db.delete(posi)
@@ -103,6 +108,8 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 dialog.dismiss()
                 actualizar(true)
             }
+
+            edit.contentDescription = "Edit your password"
 
             edit.setOnClickListener {
                 val mk = MasterKey.Builder(position.context)
