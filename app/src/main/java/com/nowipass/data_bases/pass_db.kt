@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.nowipass.manager.recy.elementos
+import com.nowipass.manager.recy.manage_data
 
 class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -48,31 +49,25 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
         db.close()
     }
 
-    fun get(){
+    fun get(): Boolean{
         val db = this.readableDatabase
         val consulta = db.rawQuery("SELECT * FROM pass_db", null)
 
-        if (consulta.moveToFirst()) {
-            autentificador_pass = true
-            asunto.add(consulta.getString(1))
-            pass.add(consulta.getString(2))
-            iv.add(consulta.getString(3))
-            while (consulta.moveToNext()) {
-                asunto.add(consulta.getString(1))
-                pass.add(consulta.getString(2))
-                iv.add(consulta.getString(3))
-            }
-        }else {
-            autentificador_pass = false
+        fun captacion(){
+            creden.add(manage_data(consulta.getString(1), consulta.getString(2), consulta.getInt(0).toString(), consulta.getString(3)))
         }
-        db.close()
-        Log.e("db", "cerrada")
+        if (consulta.moveToFirst()) {
+            captacion()
+            while (consulta.moveToNext()) {
+                captacion()
+            }
+            return true
+        }else {
+            return false
+        }
     }
 
     companion object{
-        val asunto = mutableListOf<String>()
-        val pass = mutableListOf<String>()
-        val iv = mutableListOf<String>()
-        var autentificador_pass = false
+        val creden = mutableListOf<manage_data>()
     }
 }

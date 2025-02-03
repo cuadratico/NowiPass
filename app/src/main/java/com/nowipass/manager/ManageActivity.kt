@@ -2,6 +2,7 @@ package com.nowipass.manager
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -55,10 +56,7 @@ import com.nowipass.manager.recy.manage_adapter
 import com.nowipass.manager.recy.manage_data
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
-import com.nowipass.data_bases.pass_db.Companion.asunto
-import com.nowipass.data_bases.pass_db.Companion.autentificador_pass
-import com.nowipass.data_bases.pass_db.Companion.iv
-import com.nowipass.data_bases.pass_db.Companion.pass
+import com.nowipass.data_bases.pass_db.Companion.creden
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -197,24 +195,56 @@ class ManageActivity : AppCompatActivity() {
             secure_question()
         }else {
             val db = pass_db(this)
-            db.get()
-            if (autentificador_pass){
-                autentificador_pass = false
+            if (db.get()){
                 pref = EncryptedSharedPreferences.create(applicationContext, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+                val pre = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+                val repetidas = mutableMapOf<String, Int>()
+                val rep_lista = mutableListOf<String>()
                 fun recepcion(){
                     try {
                         val ks = KeyStore.getInstance("AndroidKeyStore")
                         ks.load(null)
-
-                        for (position in 0..asunto.size - 1) {
+                        for ((asunto, pass, position, iv) in creden) {
                             val c = Cipher.getInstance("AES/GCM/NoPadding")
-                            c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv[position])))
-                            elementos.add(manage_data(String(Base64.getDecoder().decode(asunto[position])), String(c.doFinal(Base64.getDecoder().decode(pass[position]))), position.toString()))
+                            c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
+                            val password = String(c.doFinal(Base64.getDecoder().decode(pass)))
+                            elementos.add(manage_data(String(Base64.getDecoder().decode(asunto)), password, position))
+                            if (!pref.getBoolean("rep", false)) {
+                                if (repetidas[password] == null) {
+                                    repetidas.put(password, 1)
+                                } else {
+                                    repetidas[password] = repetidas[password]!! + 1
+                                }
+                            }
                         }
                         adapter.upgrade(elementos)
-                        asunto.clear()
-                        pass.clear()
-                        iv.clear()
+                        creden.clear()
+
+                        if (!pre.getBoolean("rep", false)) {
+                            for ((pass, repe) in repetidas) {
+                                if (repe > 1) {
+                                    rep_lista.add(pass)
+                                }
+                            }
+                            repetidas.clear()
+                            if (rep_lista.isNotEmpty()) {
+                                val alert_dia = AlertDialog.Builder(this)
+
+                                alert_dia.setTitle("Passwords: ${rep_lista.joinToString(", ")}\n They are repeated")
+
+                                rep_lista.clear()
+                                alert_dia.setPositiveButton("Thanks") { _, _ -> }
+
+                                alert_dia.setNegativeButton("Do not show again") { _, _ ->
+                                    pre.edit().putBoolean("rep", true).commit()
+                                }
+
+                                alert_dia.show()
+
+
+                            }
+
+                        }
                     }catch (e: Throwable){
                         bye("Fatal error")
                         val manage = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -233,8 +263,9 @@ class ManageActivity : AppCompatActivity() {
                     BiometricPrompt(this, ContextCompat.getMainExecutor(this), object: BiometricPrompt.AuthenticationCallback(){
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                             pref.edit().putBoolean("aute", true).apply()
-                            recepcion()
                             validity_duration(applicationContext, 120)
+                            Thread.sleep(200)
+                            recepcion()
                         }
 
                         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.nowipass.sesion.recy.sesion_data
 
 
 class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 1) {
@@ -26,30 +27,26 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
         db.close()
     }
 
-    fun get(){
+    fun get():Boolean{
         val db = this.readableDatabase
         val consulta = db.rawQuery("SELECT * FROM sesion_db", null)
 
-        if (consulta.moveToFirst()){
-            autentificador_sesion = true
-            time.add(consulta.getString(1))
-            succes_list.add(consulta.getInt(2))
-            vectores.add(consulta.getString(3))
-            while(consulta.moveToNext()){
-                time.add(consulta.getString(1))
-                succes_list.add(consulta.getInt(2))
-                vectores.add(consulta.getString(3))
-            }
-        }else {
-            autentificador_sesion = false
+        fun recep(){
+            sesions.add(sesion_data(consulta.getString(1), consulta.getInt(2).toString(), consulta.getInt(0).toString(), consulta.getString(3)))
         }
-        db.close()
+
+        if (consulta.moveToFirst()){
+            recep()
+            while(consulta.moveToNext()){
+                recep()
+            }
+            return true
+        }else {
+            return false
+        }
     }
 
     companion object{
-        val time = mutableListOf<String>()
-        val succes_list = mutableListOf<Int>()
-        val vectores = mutableListOf<String>()
-        var autentificador_sesion = false
+        val sesions = mutableListOf<sesion_data>()
     }
 }

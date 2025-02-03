@@ -23,10 +23,7 @@ import com.nowipass.MainActivity
 import com.nowipass.R
 import com.nowipass.activitis
 import com.nowipass.data_bases.sesion_db
-import com.nowipass.data_bases.sesion_db.Companion.autentificador_sesion
-import com.nowipass.data_bases.sesion_db.Companion.succes_list
-import com.nowipass.data_bases.sesion_db.Companion.time
-import com.nowipass.data_bases.sesion_db.Companion.vectores
+import com.nowipass.data_bases.sesion_db.Companion.sesions
 import com.nowipass.sesion.recy.sesion_adapter
 import com.nowipass.sesion.recy.sesion_data
 import com.nowipass.sesion.recy.sesiones
@@ -57,25 +54,21 @@ class sesionActivity : AppCompatActivity() {
         recy.layoutManager = LinearLayoutManager(this)
 
 
-        sesiones_db.get()
-        if (autentificador_sesion){
+        if (sesiones_db.get()){
             val exitos_list = listOf("An unsuccessful attempt", "A successful attempt")
 
 
             val ks = KeyStore.getInstance("AndroidKeyStore")
             ks.load(null)
 
-            for (position in 0..time.size - 1){
+            for ((time, succest, position, iv) in sesions){
                 val c = Cipher.getInstance("AES/GCM/NoPadding")
-                c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(vectores[position])))
+                c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
 
-                sesiones.add(sesion_data(String(c.doFinal(Base64.getDecoder().decode(time[position]))), exitos_list[succes_list[position]], position.toString()))
+                sesiones.add(sesion_data(String(c.doFinal(Base64.getDecoder().decode(time))), exitos_list[succest.toInt()], position))
             }
             adapter.upgrade()
-            time.clear()
-            succes_list.clear()
-            vectores.clear()
-            autentificador_sesion = false
+            sesions.clear()
 
         }else {
             delet.visibility = View.INVISIBLE
