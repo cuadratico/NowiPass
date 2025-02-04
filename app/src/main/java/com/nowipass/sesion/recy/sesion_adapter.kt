@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nowipass.R
+import com.nowipass.data_bases.sesion_db.Companion.sesiones
 
 class sesion_adapter(var lista: List<sesion_data>): RecyclerView.Adapter<sesion_holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): sesion_holder {

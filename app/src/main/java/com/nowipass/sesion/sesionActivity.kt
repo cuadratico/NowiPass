@@ -23,10 +23,9 @@ import com.nowipass.MainActivity
 import com.nowipass.R
 import com.nowipass.activitis
 import com.nowipass.data_bases.sesion_db
-import com.nowipass.data_bases.sesion_db.Companion.sesions
+import com.nowipass.data_bases.sesion_db.Companion.sesiones
 import com.nowipass.sesion.recy.sesion_adapter
 import com.nowipass.sesion.recy.sesion_data
-import com.nowipass.sesion.recy.sesiones
 import java.security.KeyStore
 import java.util.Base64
 import javax.crypto.Cipher
@@ -61,14 +60,12 @@ class sesionActivity : AppCompatActivity() {
             val ks = KeyStore.getInstance("AndroidKeyStore")
             ks.load(null)
 
-            for ((time, succest, position, iv) in sesions){
+            for ((time, succest, position, iv) in sesiones){
                 val c = Cipher.getInstance("AES/GCM/NoPadding")
                 c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
-
-                sesiones.add(sesion_data(String(c.doFinal(Base64.getDecoder().decode(time))), exitos_list[succest.toInt()], position))
+                sesiones[position.toInt() - 1] = sesion_data(String(c.doFinal(Base64.getDecoder().decode(time))), exitos_list[succest.toInt()], position)
             }
             adapter.upgrade()
-            sesions.clear()
 
         }else {
             delet.visibility = View.INVISIBLE

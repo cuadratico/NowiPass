@@ -23,6 +23,7 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
 
     fun delete(){
         val db = this.writableDatabase
+        db.execSQL("DELETE FROM sesion_db WHERE id BETWEEN 2 AND ?", arrayOf(sesiones.size))
         db.execSQL("DELETE FROM sesion_db")
         db.close()
     }
@@ -32,7 +33,7 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
         val consulta = db.rawQuery("SELECT * FROM sesion_db", null)
 
         fun recep(){
-            sesions.add(sesion_data(consulta.getString(1), consulta.getInt(2).toString(), consulta.getInt(0).toString(), consulta.getString(3)))
+            sesiones.add(sesion_data(consulta.getString(1), consulta.getInt(2).toString(), consulta.getInt(0).toString(), consulta.getString(3)))
         }
 
         if (consulta.moveToFirst()){
@@ -47,6 +48,6 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
     }
 
     companion object{
-        val sesions = mutableListOf<sesion_data>()
+        val sesiones = mutableListOf<sesion_data>()
     }
 }

@@ -9,6 +9,7 @@ import android.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.nowipass.R
 import com.nowipass.data_bases.pass_db
+import com.nowipass.data_bases.pass_db.Companion.elementos
 
 class manage_adapter(var list: List<manage_data>, val fil: SearchView): RecyclerView.Adapter<manage_holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): manage_holder {
@@ -24,15 +25,11 @@ class manage_adapter(var list: List<manage_data>, val fil: SearchView): Recycler
     }
 
 
-    fun upgrade(lista: List<manage_data>, upgra: Boolean = false) {
+    fun upgrade(lista: List<manage_data>) {
         if (elementos.size > 1){
             fil.visibility = View.VISIBLE
         }else {
             fil.visibility = View.INVISIBLE
-        }
-        if (upgra){
-            val db = pass_db(fil.context)
-            db.recalibracion()
         }
         this.list = lista
         notifyDataSetChanged()

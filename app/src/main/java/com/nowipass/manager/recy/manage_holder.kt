@@ -32,10 +32,10 @@ import javax.crypto.Cipher
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.nowipass.entropia
-import com.nowipass.manager.upgrade_what
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.nowipass.data_bases.pass_db.Companion.elementos
 
 @SuppressLint("NewApi")
 class manage_holder(view: View): RecyclerView.ViewHolder(view) {
@@ -70,9 +70,8 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
         all.setOnClickListener {
 
-            fun actualizar(valor: Boolean = false){
+            fun actualizar(){
                 all.isEnabled = false
-                upgrade_what = valor
                 upgrade_items = true
                 Toast.makeText(position.context, "Wait", Toast.LENGTH_SHORT).show()
                 all.isEnabled = true
@@ -103,10 +102,10 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
             delete.setOnClickListener {
                 val posi = position.text.toString().toInt()
-                db.delete(posi)
                 elementos.removeAt(posi)
+                db.delete(posi)
                 dialog.dismiss()
-                actualizar(true)
+                actualizar()
             }
 
             edit.contentDescription = "Edit your password"

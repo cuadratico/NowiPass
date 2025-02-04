@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.nowipass.manager.recy.elementos
 import com.nowipass.manager.recy.manage_data
 
 class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
@@ -33,19 +32,16 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
         db.close()
     }
 
-    fun recalibracion(){
-        val db = this.writableDatabase
-
-        for (valores in 0..elementos.size - 1){
-            db.execSQL("UPDATE pass_db SET id = ? WHERE id = ?", arrayOf(valores, elementos[valores].position))
-            elementos[valores].position = valores.toString()
-        }
-        db.close()
-    }
-
     fun delete(id: Int){
         val db = this.writableDatabase
         db.execSQL("DELETE FROM pass_db WHERE id = ?", arrayOf(id))
+
+        for (valores in 0..elementos.size - 1){
+            db.execSQL("UPDATE pass_db SET id = ? WHERE id = ?", arrayOf(valores, elementos[valores].position.toInt()))
+            elementos[valores].position = valores.toString()
+            Log.e("lista", "posiciones actualizadas")
+        }
+
         db.close()
     }
 
@@ -54,7 +50,7 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
         val consulta = db.rawQuery("SELECT * FROM pass_db", null)
 
         fun captacion(){
-            creden.add(manage_data(consulta.getString(1), consulta.getString(2), consulta.getInt(0).toString(), consulta.getString(3)))
+            elementos.add(manage_data(consulta.getString(1), consulta.getString(2), consulta.getInt(0).toString(), consulta.getString(3)))
         }
         if (consulta.moveToFirst()) {
             captacion()
@@ -68,6 +64,6 @@ class pass_db(context: Context): SQLiteOpenHelper(context, "pass_db", null, 1) {
     }
 
     companion object{
-        val creden = mutableListOf<manage_data>()
+        val elementos = mutableListOf<manage_data>()
     }
 }

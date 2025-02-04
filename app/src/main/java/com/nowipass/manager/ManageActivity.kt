@@ -51,12 +51,11 @@ import com.nowipass.R
 import com.nowipass.activitis
 import com.nowipass.data_bases.pass_db
 import com.nowipass.entropia
-import com.nowipass.manager.recy.elementos
 import com.nowipass.manager.recy.manage_adapter
 import com.nowipass.manager.recy.manage_data
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
-import com.nowipass.data_bases.pass_db.Companion.creden
+import com.nowipass.data_bases.pass_db.Companion.elementos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -68,7 +67,6 @@ import javax.crypto.spec.GCMParameterSpec
 
 var tim = 0
 var upgrade_items = false
-var upgrade_what = false
 var resume = false
 class ManageActivity : AppCompatActivity() {
     @SuppressLint("NewApi", "MissingInflatedId")
@@ -84,7 +82,7 @@ class ManageActivity : AppCompatActivity() {
         val filter = findViewById<SearchView>(R.id.filter)
         filter.visibility = View.INVISIBLE
         val recy = findViewById<RecyclerView>(R.id.recy)
-        val adapter = manage_adapter(elementos, filter)
+        val adapter = manage_adapter(listOf(), filter)
         recy.adapter = adapter
         recy.layoutManager = LinearLayoutManager(this)
 
@@ -108,6 +106,7 @@ class ManageActivity : AppCompatActivity() {
             bye("You need to activate a pin or biometric data to continue")
         }
 
+
         filter.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(text: String?): Boolean {
                 val new = elementos.filter {dato -> dato.asunto.contains(text.toString())}
@@ -127,9 +126,8 @@ class ManageActivity : AppCompatActivity() {
                 if (upgrade_items) {
                     upgrade_items = false
                     withContext(Dispatchers.Main) {
-                        adapter.upgrade(elementos, upgrade_items)
+                        adapter.upgrade(elementos)
                     }
-                    upgrade_what = false
                 }
                 delay(1000)
             }
@@ -204,11 +202,11 @@ class ManageActivity : AppCompatActivity() {
                     try {
                         val ks = KeyStore.getInstance("AndroidKeyStore")
                         ks.load(null)
-                        for ((asunto, pass, position, iv) in creden) {
+                        for ((asunto, pass, position, iv) in elementos) {
                             val c = Cipher.getInstance("AES/GCM/NoPadding")
                             c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
                             val password = String(c.doFinal(Base64.getDecoder().decode(pass)))
-                            elementos.add(manage_data(String(Base64.getDecoder().decode(asunto)), password, position))
+                            elementos[position.toInt()] = manage_data(String(Base64.getDecoder().decode(asunto)), password, position)
                             if (!pref.getBoolean("rep", false)) {
                                 if (repetidas[password] == null) {
                                     repetidas.put(password, 1)
@@ -218,7 +216,6 @@ class ManageActivity : AppCompatActivity() {
                             }
                         }
                         adapter.upgrade(elementos)
-                        creden.clear()
 
                         if (!pre.getBoolean("rep", false)) {
                             for ((pass, repe) in repetidas) {
@@ -244,6 +241,10 @@ class ManageActivity : AppCompatActivity() {
 
                             }
 
+                        }
+
+                        if (elementos.size > 1){
+                            filter.visibility = View.VISIBLE
                         }
                     }catch (e: Throwable){
                         bye("Fatal error")
@@ -275,9 +276,7 @@ class ManageActivity : AppCompatActivity() {
                 }else {
                     recepcion()
                 }
-                if (elementos.size > 1){
-                    filter.visibility = View.VISIBLE
-                }
+
             }
         }
 
@@ -314,6 +313,9 @@ class ManageActivity : AppCompatActivity() {
                     db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
                     elementos.add(manage_data(asunto, pass, elementos.size.toString()))
                     adapter.upgrade(elementos)
+                    if (elementos.size > 1) {
+                        filter.visibility = View.VISIBLE
+                    }
 
                 }
                 if (!pref.getBoolean("aute", false)){
@@ -328,9 +330,7 @@ class ManageActivity : AppCompatActivity() {
                             validity_duration(applicationContext, 120)
                             dialog.dismiss()
                             pref.edit().putBoolean("aute", true).apply()
-                            if (elementos.size > 1) {
-                                filter.visibility = View.VISIBLE
-                            }
+
                         }
 
                         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {

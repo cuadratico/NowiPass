@@ -40,6 +40,7 @@ import javax.crypto.Cipher
 import kotlin.random.Random
 import java.security.SecureRandom
 import javax.crypto.SecretKey
+import com.nowipass.data_bases.sesion_db.Companion.sesiones
 
 class gen(val context: Context) {
 
