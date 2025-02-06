@@ -11,8 +11,8 @@ android {
         applicationId = "com.nowipass"
         minSdk = 24
         targetSdk = 34
-        versionCode = 13
-        versionName = "0.2.10"
+        versionCode = 14
+        versionName = "0.3.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

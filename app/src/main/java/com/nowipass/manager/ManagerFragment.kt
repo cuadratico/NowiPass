@@ -50,7 +50,6 @@ class ManagerFragment : Fragment() {
         _binding = FragmentManagerBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-       // todo el codigo
 
         val mk = MasterKey.Builder(requireContext())
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -99,6 +98,11 @@ class ManagerFragment : Fragment() {
             password.addTextChangedListener {dato ->
                 if (dato!!.toList().size == 9 && dato.toString().trim().isNotEmpty()){
                     gen.recep(password, opor, requireActivity(), dialog)
+                }
+
+                if (dato.toList().size > 9){
+                    Toast.makeText(requireContext(), "You shouldn't put texts that big.", Toast.LENGTH_SHORT).show()
+                    password.setText("")
                 }
 
             }

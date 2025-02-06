@@ -1,19 +1,29 @@
 package com.nowipass.noCaptcha
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.shapes.Shape
+import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -21,6 +31,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +59,14 @@ class noCaptchaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_no_captcha)
 
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
+
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED && VERSION.SDK_INT >= VERSION_CODES.TIRAMISU){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
+        }
+
         supportActionBar?.setTitle("NoCaptcha")
         val ks = KeyStore.getInstance("AndroidKeyStore")
         ks.load(null)
@@ -55,6 +74,26 @@ class noCaptchaActivity : AppCompatActivity() {
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
         val pref = EncryptedSharedPreferences.create(this, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
+        if (!pref.getBoolean("form", false)){
+            val alert_d = AlertDialog.Builder(this)
+
+                .setTitle("You want to give your ideas about NowiPass?")
+                .setPositiveButton("No problem"){_, _ ->
+                    pref.edit().putBoolean("form", true).apply()
+                    Log.e("return", pref.getBoolean("form", false).toString())
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/sb3vNSLX4NteboBR6")))
+                    finishAffinity()
+                }
+                .setNegativeButton("No, thanks"){_, _ ->
+                    pref.edit().putBoolean("form", true).apply()
+                    Log.e("return", pref.getBoolean("form", false).toString())
+                    recreate()
+                }
+
+            alert_d.setCancelable(false)
+            alert_d.show()
+        }
 
         val main = findViewById<ConstraintLayout>(R.id.main)
         val fondo = findViewById<ShapeableImageView>(R.id.fondo)
@@ -162,6 +201,17 @@ class noCaptchaActivity : AppCompatActivity() {
 
         if (pref.getBoolean("block", false)){
             finish()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray, deviceId: Int) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+
+        if (requestCode == 100 && VERSION.SDK_INT >= VERSION_CODES.O){
+            val manage_noti = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val canal = NotificationChannel("NowiChannel", "canal", NotificationManager.IMPORTANCE_LOW)
+
+            manage_noti.createNotificationChannel(canal)
         }
     }
 }

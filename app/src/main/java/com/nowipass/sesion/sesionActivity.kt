@@ -32,6 +32,7 @@ import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
+val exitos_list = listOf("An unsuccessful attempt", "A successful attempt")
 class sesionActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +55,6 @@ class sesionActivity : AppCompatActivity() {
 
 
         if (sesiones_db.get()){
-            val exitos_list = listOf("An unsuccessful attempt", "A successful attempt")
-
 
             val ks = KeyStore.getInstance("AndroidKeyStore")
             ks.load(null)
@@ -63,6 +62,7 @@ class sesionActivity : AppCompatActivity() {
             for ((time, succest, position, iv) in sesiones){
                 val c = Cipher.getInstance("AES/GCM/NoPadding")
                 c.init(Cipher.DECRYPT_MODE, ks.getKey(ali, null), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
+                Log.e("posicion", position)
                 sesiones[position.toInt() - 1] = sesion_data(String(c.doFinal(Base64.getDecoder().decode(time))), exitos_list[succest.toInt()], position)
             }
             adapter.upgrade()

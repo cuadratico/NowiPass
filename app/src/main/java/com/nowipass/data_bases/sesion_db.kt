@@ -23,8 +23,8 @@ class sesion_db(context: Context): SQLiteOpenHelper(context, "sesion_db", null, 
 
     fun delete(){
         val db = this.writableDatabase
-        db.execSQL("DELETE FROM sesion_db WHERE id BETWEEN 2 AND ?", arrayOf(sesiones.size))
         db.execSQL("DELETE FROM sesion_db")
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name = ?", arrayOf("sesion_db"))
         db.close()
     }
 

@@ -1,13 +1,16 @@
 package com.nowipass.manager
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.Dialog
+import android.app.NotificationManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings.Secure
 import android.security.keystore.KeyGenParameterSpec
@@ -22,15 +25,18 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.nowipass.MainActivity
+import com.nowipass.R
 import com.nowipass.activitis
 import com.nowipass.data_bases.pass_db
 import com.nowipass.data_bases.sesion_db
-import com.nowipass.sesion.sesionActivity
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -41,6 +47,8 @@ import kotlin.random.Random
 import java.security.SecureRandom
 import javax.crypto.SecretKey
 import com.nowipass.data_bases.sesion_db.Companion.sesiones
+import com.nowipass.sesion.exitos_list
+import com.nowipass.sesion.sesionActivity
 
 class gen(val context: Context) {
 
@@ -83,7 +91,7 @@ class gen(val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun recep(pass: AppCompatEditText, opor: TextView, activity: Activity, dialog: Dialog){
-
+        val noti_manage = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val password = pass.text.toString()
         val ks = KeyStore.getInstance("AndroidKeyStore")
@@ -95,9 +103,11 @@ class gen(val context: Context) {
         val pref  = EncryptedSharedPreferences.create(context, "as", mk ,EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val pre = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
         val hash = MessageDigest.getInstance("SHA256")
+        var exito = 0
         if (ks.getKey(password.split(password[5])[0], null) != null && Base64.getEncoder().withoutPadding().encodeToString(hash.digest((password.split(password[4])[1]).toByteArray())) == pref.getString("hash", "")){
             if (pre.getBoolean("question_exist", false)){
-                sesion_register(1, mk)
+                exito = 1
+                sesion_register(exito, mk)
             }
             val intent = Intent(context, ManageActivity::class.java)
                 .putExtra("alias", password.split(password[5])[0])
@@ -106,12 +116,22 @@ class gen(val context: Context) {
             activity.finish()
         }else {
             if (pre.getBoolean("question_exist", false)){
-                sesion_register(0 ,mk)
+                sesion_register(exito ,mk)
             }
             pass.setText("")
             oportunidades(context, opor, activity)
         }
 
+        if (pre.getBoolean("question_exist", false) && ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED && noti_manage.getNotificationChannel("NowiChannel") != null){
+            val notification = NotificationCompat.Builder(context, "NowiChannel")
+                .setSmallIcon(R.mipmap.logo_nowipass_new_round)
+                .setContentTitle("Login")
+                .setContentText(exitos_list[exito])
+                .setPriority(NotificationManager.IMPORTANCE_LOW)
+                .build()
+
+            NotificationManagerCompat.from(context).notify(1, notification)
+        }
     }
 
 
