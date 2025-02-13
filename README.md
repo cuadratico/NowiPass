@@ -11,7 +11,7 @@
 
 [![Static Badge](https://img.shields.io/badge/openapk-0.3.10-violet)](https://www.openapk.net/nowipass/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.10-yellow)](https://www.openapk.net/nowipass/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.10-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
 
 - F-Droid: NowiPass is still in the process of being published on F-Droid, but it will be available for download soon.
 
