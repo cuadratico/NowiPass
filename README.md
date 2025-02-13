@@ -5,11 +5,15 @@
 
 - Malicious sites where GitHub repositories are published are a reality so I'm going to tell you where you can download NowiPass without problems.
 
-- GitHub: NowiPass is on GitHub and this is the official repository.
+[![Static Badge](https://img.shields.io/badge/Github-0.3.10-green)](https://github.com/cuadratico/NowiPass/releases)
+
+[![Static Badge](https://img.shields.io/badge/izzysoft-0.3.10-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
+
+[![Static Badge](https://img.shields.io/badge/openapk-0.3.10-violet)](https://www.openapk.net/nowipass/com.nowipass/)
+
+[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.10-yellow)](https://www.openapk.net/nowipass/com.nowipass/)
 
 - F-Droid: NowiPass is still in the process of being published on F-Droid, but it will be available for download soon.
-
-- IzzySoft: NowiPass is also here and is authorized by me, so there is no problem with downloading it from IzzySoft.
 
 - important: Any page not mentioned is not legitimate and therefore I do not recommend downloading NowiPass from there. If the page contains a direct link to this repository, check its legitimacy. And remember to stay safe with all your interactions.
 
