@@ -2,4 +2,5 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/logo_nowipass_new_background"/>
     <foreground android:drawable="@drawable/logo_nowipass_new_foreground"/>
+    <monochrome android:drawable="@drawable/logo_nowipass_new_foreground"/>
 </adaptive-icon>
