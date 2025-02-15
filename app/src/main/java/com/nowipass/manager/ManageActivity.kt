@@ -208,10 +208,10 @@ class ManageActivity : AppCompatActivity() {
                             val password = String(c.doFinal(Base64.getDecoder().decode(pass)))
                             elementos[position.toInt()] = manage_data(String(Base64.getDecoder().decode(asunto)), password, position)
                             if (!pref.getBoolean("rep", false)) {
-                                if (repetidas[password] == null) {
-                                    repetidas.put(password, 1)
+                                if (repetidas[password.trim()] == null) {
+                                    repetidas.put(password.trim(), 1)
                                 } else {
-                                    repetidas[password] = repetidas[password]!! + 1
+                                    repetidas[password.trim()] = repetidas[password.trim()]!! + 1
                                 }
                             }
                         }
