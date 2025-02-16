@@ -11,7 +11,7 @@
 
 [![Static Badge](https://img.shields.io/badge/openapk-0.3.11-violet)](https://www.openapk.net/nowipass/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.10-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
+[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.11-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
 
 [![Static Badge](https://img.shields.io/badge/FDroid-0.3.10-green)](https://f-droid.org/es/packages/com.nowipass/)
 
