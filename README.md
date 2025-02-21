@@ -13,7 +13,7 @@
 
 [![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.11-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
 
-[![Static Badge](https://img.shields.io/badge/FDroid-0.3.10-green)](https://f-droid.org/es/packages/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/FDroid-0.3.11-green)](https://f-droid.org/es/packages/com.nowipass/)
 
 
 
