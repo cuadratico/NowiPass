@@ -9,6 +9,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.renderscript.ScriptGroup.Input
+import android.text.InputType
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -74,7 +79,26 @@ class ManagerFragment : Fragment() {
 
             val opor = view.findViewById<TextView>(R.id.opor)
             opor.text = pref.getString("opor", "3")
+            val visible = view.findViewById<ConstraintLayout>(R.id.visible)
+            val v_image = view.findViewById<ShapeableImageView>(R.id.v_imagen)
+            var v_valor = false
             val password = view.findViewById<AppCompatEditText>(R.id.input_pass)
+
+            visible.setOnClickListener {
+                if (v_valor){
+                    v_valor = false
+                    v_image.setImageResource(R.drawable.close_eye)
+                    password.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    password.transformationMethod = PasswordTransformationMethod.getInstance()
+                }else {
+                    v_valor = true
+                    v_image.setImageResource(R.drawable.open_eye)
+                    password.inputType = InputType.TYPE_CLASS_TEXT
+                    password.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                }
+                password.setSelection(password.text!!.length)
+            }
+
 
             if (!pref.getBoolean("pass_exist", false)){
                 boton.contentDescription = "Wait for the password to be created"
