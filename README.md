@@ -5,7 +5,7 @@
 
 - Malicious sites where GitHub repositories are published are a reality so I'm going to tell you where you can download NowiPass without problems.
 
-[![Static Badge](https://img.shields.io/badge/Github-0.3.11-black)](https://github.com/cuadratico/NowiPass/releases)
+[![Static Badge](https://img.shields.io/badge/Github-0.3.12-black)](https://github.com/cuadratico/NowiPass/releases)
 
 [![Static Badge](https://img.shields.io/badge/izzysoft-0.3.11-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
 
