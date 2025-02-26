@@ -9,9 +9,9 @@
 
 [![Static Badge](https://img.shields.io/badge/izzysoft-0.3.11-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/openapk-0.3.11-violet)](https://www.openapk.net/nowipass/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/openapk-0.3.12-violet)](https://www.openapk.net/nowipass/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.11-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
+[![Static Badge](https://img.shields.io/badge/androidfreeware-0.3.12-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
 
 [![Static Badge](https://img.shields.io/badge/FDroid-0.3.11-green)](https://f-droid.org/es/packages/com.nowipass/)
 
