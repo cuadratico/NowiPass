@@ -1,11 +1,12 @@
-
 ![Logo](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/icon.png)
+
+
 
 # Where is it safe to download NowiPass
 
 - Malicious sites where GitHub repositories are published are a reality so I'm going to tell you where you can download NowiPass without problems.
 
-[![Static Badge](https://img.shields.io/badge/Github-0.3.12-black)](https://github.com/cuadratico/NowiPass/releases)
+[![Static Badge](https://img.shields.io/badge/Github-0.3.13-black)](https://github.com/cuadratico/NowiPass/releases)
 
 [![Static Badge](https://img.shields.io/badge/izzysoft-0.3.12-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
 
@@ -18,6 +19,16 @@
 
 
 - important: Any page not mentioned is not legitimate and therefore I do not recommend downloading NowiPass from there. If the page contains a direct link to this repository, check its legitimacy. And remember to stay safe with all your interactions.
+
+
+# How can I support NowiPass?
+
+- You can donate the amount of money you want and be sure that that money will only be invested in the next updates of NowiPass and in the next developments of Nowi such as NowiChat, a chat app with bluetooth networks and hybrid cryptography
+[![Static Badge](https://img.shields.io/badge/Donate-Kofi-blue)](https://ko-fi.com/cuadratico)
+
+- You can also contribute ideas to the project and give your opinion about it.
+[![Static Badge](https://img.shields.io/badge/Idea-form-blue)](https://forms.gle/sb3vNSLX4NteboBR6)
+
 
 # NowiPass
 
