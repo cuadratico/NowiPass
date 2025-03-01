@@ -78,19 +78,19 @@ class noCaptchaActivity : AppCompatActivity() {
         if (!pref.getBoolean("form", false)){
             val alert_d = AlertDialog.Builder(this)
 
-                .setTitle("You want to give your ideas about NowiPass?")
-                .setPositiveButton("No problem"){_, _ ->
-                    pref.edit().putBoolean("form", true).apply()
+                .setTitle("Do you want to contribute ideas or donate money to the NowiPass project?")
+                .setPositiveButton("Ideas"){_, _ ->
+                    pref.edit().putBoolean("form", true).commit()
                     Log.e("return", pref.getBoolean("form", false).toString())
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/sb3vNSLX4NteboBR6")))
-                    finishAffinity()
                 }
-                .setNegativeButton("No, thanks"){_, _ ->
-                    pref.edit().putBoolean("form", true).apply()
-                    Log.e("return", pref.getBoolean("form", false).toString())
-                    recreate()
+                .setNegativeButton("Donate"){_, _ ->
+                    pref.edit().putBoolean("form", true).commit()
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/cuadratico")))
                 }
-
+                .setNeutralButton("No"){_, _ ->
+                    pref.edit().putBoolean("form", true).commit()
+                }
             alert_d.setCancelable(false)
             alert_d.show()
         }

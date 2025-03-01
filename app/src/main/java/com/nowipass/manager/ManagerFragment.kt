@@ -59,12 +59,13 @@ class ManagerFragment : Fragment() {
         val mk = MasterKey.Builder(requireContext())
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        var pref = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pref_as = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        val pref_ap = EncryptedSharedPreferences.create(requireContext(), "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
         val boton = binding.manage
         val clock = binding.secureClock
         val padlock = binding.finish
-        if (pref.getString("aws", "") == ""){
+        if (pref_as.getString("aws", "") == ""){
             clock.visibility = View.INVISIBLE
         }else {
             clock.visibility = View.VISIBLE
@@ -72,13 +73,11 @@ class ManagerFragment : Fragment() {
         val gen = gen(requireContext())
 
         boton.setOnClickListener {
-            pref = EncryptedSharedPreferences.create(requireContext(), "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-
             val dialog = Dialog(requireContext())
             val view = LayoutInflater.from(requireContext()).inflate(R.layout.view_password, null)
 
             val opor = view.findViewById<TextView>(R.id.opor)
-            opor.text = pref.getString("opor", "3")
+            opor.text = pref_ap.getString("opor", "3")
             val visible = view.findViewById<ConstraintLayout>(R.id.visible)
             val v_image = view.findViewById<ShapeableImageView>(R.id.v_imagen)
             var v_valor = false
@@ -100,7 +99,7 @@ class ManagerFragment : Fragment() {
             }
 
 
-            if (!pref.getBoolean("pass_exist", false)){
+            if (!pref_ap.getBoolean("pass_exist", false)){
                 boton.contentDescription = "Wait for the password to be created"
                 boton.isEnabled = false
                 gen.gener()
@@ -140,11 +139,11 @@ class ManagerFragment : Fragment() {
             val dialog = Dialog(requireContext())
             val view = LayoutInflater.from(requireContext()).inflate(R.layout.secure_question_interfaz, null)
 
-            pref = EncryptedSharedPreferences.create(requireContext(), "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
             val opor = view.findViewById<TextView>(R.id.opor)
+            opor.text = pref_ap.getString("opor", "3")
             val question = view.findViewById<TextView>(R.id.question)
-            question.text = pref.getString("question", "")
+            question.text = pref_as.getString("question", "")
             val input_answer = view.findViewById<AppCompatEditText>(R.id.input_answer)
             val go = view.findViewById<ShapeableImageView>(R.id.go)
 
