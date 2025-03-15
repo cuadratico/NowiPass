@@ -76,7 +76,6 @@ class gen(val context: Context) {
 
         Toast.makeText(context, "Prepare to capture the screen", Toast.LENGTH_LONG).show()
         Toast.makeText(context, "This is your password: $password", Toast.LENGTH_LONG).show()
-
         val mk = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()

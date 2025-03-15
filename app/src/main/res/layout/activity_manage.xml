@@ -25,6 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/bordes_blue2"
         />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_pass"
         android:layout_width="80dp"
@@ -46,4 +47,28 @@
          android:layout_marginTop="10dp"
         />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_mode"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/add_pass"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/blue"
+        >
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/search_mode"
+            app:layout_constraintTop_toTopOf="@id/search_mode"
+            app:layout_constraintBottom_toBottomOf="@id/search_mode"
+            app:layout_constraintEnd_toEndOf="@id/search_mode"
+            app:layout_constraintStart_toStartOf="@id/search_mode"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

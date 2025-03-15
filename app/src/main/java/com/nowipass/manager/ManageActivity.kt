@@ -55,6 +55,8 @@ import com.nowipass.manager.recy.manage_adapter
 import com.nowipass.manager.recy.manage_data
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.nowipass.bluetooth_things.Companion.dialog_bluetooth
+import com.nowipass.bluetooth_things.Companion.search_bluetooth
 import com.nowipass.data_bases.pass_db.Companion.elementos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -68,6 +70,9 @@ import javax.crypto.spec.GCMParameterSpec
 var tim = 0
 var upgrade_items = false
 var resume = false
+var scrollTo = 0
+lateinit var activity: Activity
+
 class ManageActivity : AppCompatActivity() {
     @SuppressLint("NewApi", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +82,9 @@ class ManageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_manage)
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         supportActionBar?.setTitle("Manage")
+        activity = this
         val add = findViewById<ConstraintLayout>(R.id.add_pass)
+        val search_mode = findViewById<ConstraintLayout>(R.id.search_mode)
         val ali = intent.extras?.getString("alias").orEmpty()
         val filter = findViewById<SearchView>(R.id.filter)
         filter.visibility = View.INVISIBLE
@@ -127,6 +134,11 @@ class ManageActivity : AppCompatActivity() {
                     upgrade_items = false
                     withContext(Dispatchers.Main) {
                         adapter.upgrade(elementos)
+                    }
+                }
+                if (scrollTo > 0){
+                    withContext (Dispatchers.Main){
+                        recy.scrollToPosition(scrollTo)
                     }
                 }
                 delay(1000)
@@ -288,6 +300,8 @@ class ManageActivity : AppCompatActivity() {
 
             val input_asunto = view.findViewById<EditText>(R.id.input_asunto)
             val input_password = view.findViewById<EditText>(R.id.input_password)
+            val add_mac = view.findViewById<ConstraintLayout>(R.id.add_mac)
+            add_mac.visibility = View.INVISIBLE
             val delet = view.findViewById<ConstraintLayout>(R.id.delete_pass)
             delet.visibility = View.INVISIBLE
             val edit = view.findViewById<ConstraintLayout>(R.id.edit_pass)
@@ -347,6 +361,19 @@ class ManageActivity : AppCompatActivity() {
             dialog.setContentView(view)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
+        }
+
+        search_mode.setOnClickListener {
+            Log.e("Boton", "seleccionado")
+            val view = dialog_bluetooth()
+
+            view.post {
+                val infomration = view.findViewById<TextView>(R.id.information)
+                 if (search_bluetooth(this)){
+                    infomration.text = "Sharing keys..."
+                }
+            }
+
         }
 
         window.setFlags(

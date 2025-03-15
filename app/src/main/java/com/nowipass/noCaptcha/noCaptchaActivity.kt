@@ -7,6 +7,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -40,7 +41,9 @@ import androidx.security.crypto.MasterKey
 import com.google.android.material.imageview.ShapeableImageView
 import com.nowipass.MainActivity
 import com.nowipass.R
+import com.nowipass.bluetooth_things.Companion.adaptador_bluetooth
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -52,6 +55,7 @@ import javax.crypto.KeyGenerator
 import kotlin.random.Random
 
 class noCaptchaActivity : AppCompatActivity() {
+    @RequiresApi(VERSION_CODES.S)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,13 +63,9 @@ class noCaptchaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_no_captcha)
 
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        val permi = arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION)
 
-
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED && VERSION.SDK_INT >= VERSION_CODES.TIRAMISU){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
-        }
+        ActivityCompat.requestPermissions(this, permi, 100)
 
         supportActionBar?.setTitle("NoCaptcha")
         val ks = KeyStore.getInstance("AndroidKeyStore")
@@ -103,7 +103,7 @@ class noCaptchaActivity : AppCompatActivity() {
         val box = findViewById<ShapeableImageView>(R.id.box)
         var toques= 0
         var tiempo= 0
-        val scope = CoroutineScope(Dispatchers.Main)
+        val scope = CoroutineScope(Dispatchers.IO)
         fun dialog(){
             Log.e("dialog", "dialog")
             val dialog = Dialog(this)
@@ -145,7 +145,7 @@ class noCaptchaActivity : AppCompatActivity() {
             fondo_layout.post {
                 actualizar()
             }
-            scope.launch(Dispatchers.IO){
+            scope.launch(start = CoroutineStart.LAZY){
                 while(true){
                     tiempo ++
                     delay(1000)
@@ -207,11 +207,16 @@ class noCaptchaActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray, deviceId: Int) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
 
-        if (requestCode == 100 && VERSION.SDK_INT >= VERSION_CODES.O){
+        if (requestCode == 100 && VERSION.SDK_INT >= VERSION_CODES.O && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED){
             val manage_noti = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val canal = NotificationChannel("NowiChannel", "canal", NotificationManager.IMPORTANCE_LOW)
 
             manage_noti.createNotificationChannel(canal)
+
+            if (!adaptador_bluetooth.isEnabled) {
+                Toast.makeText(this, "NowiPass needs bluetooth to be able to share passwords", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            }
         }
     }
 }

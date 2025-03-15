@@ -31,11 +31,16 @@ import java.util.Base64
 import javax.crypto.Cipher
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.nowipass.bluetooth_things.Companion.conexion_bluetooth
+import com.nowipass.bluetooth_things.Companion.dialog_bluetooth
+import com.nowipass.bluetooth_things.Companion.pass_share
+import com.nowipass.bluetooth_things.Companion.very_mac
 import com.nowipass.entropia
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.nowipass.data_bases.pass_db.Companion.elementos
+import com.nowipass.manager.activity
 
 @SuppressLint("NewApi")
 class manage_holder(view: View): RecyclerView.ViewHolder(view) {
@@ -76,10 +81,12 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 Toast.makeText(position.context, "Wait", Toast.LENGTH_SHORT).show()
                 all.isEnabled = true
             }
+
             val db = pass_db(position.context)
             val dialog = Dialog(position.context)
             val view = LayoutInflater.from(position.context).inflate(R.layout.add_edit_password_manage, null)
 
+            val add_mac = view.findViewById<ConstraintLayout>(R.id.add_mac)
             val resumen = view.findViewById<TextView>(R.id.resumen)
             resumen.text = "Edit your password"
             val input_a = view.findViewById<EditText>(R.id.input_asunto)
@@ -110,11 +117,12 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
 
             edit.contentDescription = "Edit your password"
 
+            val mk = MasterKey.Builder(position.context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            val pref = EncryptedSharedPreferences.create(position.context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
             edit.setOnClickListener {
-                val mk = MasterKey.Builder(position.context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
-                val pref = EncryptedSharedPreferences.create(position.context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
                 val ks = KeyStore.getInstance("AndroidKeyStore")
                 ks.load(null)
@@ -127,6 +135,36 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 actualizar()
             }
 
+            add_mac.setOnClickListener {
+                pass_share = input_p.text.toString()
+                dialog.dismiss()
+                val dialog_mac = Dialog(asunto.context)
+                val view_mac = LayoutInflater.from(asunto.context).inflate(R.layout.add_mac, null)
+
+                val add_button = view_mac.findViewById<ConstraintLayout>(R.id.add_device)
+                val input_mac = view_mac.findViewById<EditText>(R.id.input_mac)
+
+
+                add_button.setOnClickListener {
+                    if (very_mac(input_mac.text.toString())){
+                        dialog_mac.dismiss()
+                        val view = dialog_bluetooth()
+
+                        view.post {
+                            val information = view.findViewById<TextView>(R.id.information)
+                            if (conexion_bluetooth(asunto.context, input_mac.text.toString())){
+                                information.text = "Sharing keys..."
+                            }
+                        }
+                    }else {
+                        Toast.makeText(asunto.context, "The mac address is not correct", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                dialog_mac.setContentView(view_mac)
+                dialog_mac.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog_mac.show()
+            }
             dialog.setContentView(view)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
