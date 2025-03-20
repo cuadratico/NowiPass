@@ -19,8 +19,8 @@ class sesion_adapter(var lista: List<sesion_data>): RecyclerView.Adapter<sesion_
         return holder.elemento(lista[position])
     }
 
-    fun upgrade(){
-        this.lista = sesiones
+    fun upgrade(lista: List<sesion_data>){
+        this.lista = lista
         notifyDataSetChanged()
     }
 }

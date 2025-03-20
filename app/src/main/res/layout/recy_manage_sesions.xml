@@ -71,4 +71,10 @@
         android:textColor="@color/gris_3"
         android:gravity="center"
         />
+
+    <View
+        android:id="@+id/click"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

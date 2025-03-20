@@ -164,7 +164,7 @@ class gen(val context: Context) {
         val c = Cipher.getInstance("AES/GCM/NoPadding")
         c.init(Cipher.ENCRYPT_MODE, ks.getKey(pref.getString("aws", ""), null))
 
-        sesion.put(Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(LocalDateTime.now().toString().split("T").joinToString("-").toByteArray())), exito, Base64.getEncoder().withoutPadding().encodeToString(c.iv))
+        sesion.put(Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(LocalDateTime.now().toString().split("T").joinToString(" / ").toByteArray())), exito, Base64.getEncoder().withoutPadding().encodeToString(c.iv))
     }
 
 }

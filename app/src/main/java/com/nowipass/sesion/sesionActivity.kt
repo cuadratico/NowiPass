@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -45,6 +46,7 @@ class sesionActivity : AppCompatActivity() {
 
         val recy = findViewById<RecyclerView>(R.id.recy)
         val delet = findViewById<ConstraintLayout>(R.id.delete)
+        val fill = findViewById<SearchView>(R.id.fill)
         val info = findViewById<TextView>(R.id.info)
         info.visibility = View.INVISIBLE
         val adapter = sesion_adapter(sesiones)
@@ -56,6 +58,9 @@ class sesionActivity : AppCompatActivity() {
 
         if (sesiones_db.get()){
 
+            if (sesiones.size < 2){
+                fill.visibility = View.INVISIBLE
+            }
             val ks = KeyStore.getInstance("AndroidKeyStore")
             ks.load(null)
 
@@ -65,21 +70,39 @@ class sesionActivity : AppCompatActivity() {
                 Log.e("posicion", position)
                 sesiones[position.toInt() - 1] = sesion_data(String(c.doFinal(Base64.getDecoder().decode(time))), exitos_list[succest.toInt()], position)
             }
-            adapter.upgrade()
+            adapter.upgrade(sesiones)
 
         }else {
             delet.visibility = View.INVISIBLE
             info.visibility = View.VISIBLE
+            fill.visibility = View.INVISIBLE
         }
 
+        fill.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(text: String?): Boolean {
+
+                val fill_list = sesiones.filter { dato -> dato.time.contains(text.toString())  }
+                adapter.upgrade(fill_list)
+                return true
+            }
+
+            override fun onQueryTextChange(text: String?): Boolean {
+                if (text.toString().isEmpty()){
+                    adapter.upgrade(sesiones)
+                }
+                return true
+            }
+
+        })
         delet.contentDescription = "Delete all your session logs"
 
         delet.setOnClickListener {
             sesiones_db.delete()
             sesiones.clear()
-            adapter.upgrade()
+            adapter.upgrade(sesiones)
             delet.visibility = View.INVISIBLE
             info.visibility = View.VISIBLE
+            fill.visibility = View.INVISIBLE
         }
 
         window.setFlags(

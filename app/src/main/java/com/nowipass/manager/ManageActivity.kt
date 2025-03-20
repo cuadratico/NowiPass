@@ -114,10 +114,18 @@ class ManageActivity : AppCompatActivity() {
         }
 
 
+        filter.queryHint = "position/search"
+
         filter.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            val regex = Regex("position/.+")
             override fun onQueryTextSubmit(text: String?): Boolean {
-                val new = elementos.filter {dato -> dato.asunto.contains(text.toString())}
-                adapter.upgrade(new)
+                if (text!!.matches(regex)){
+                    val new = elementos.filter {dato -> dato.position.contains(text.split("/")[1].trim())}
+                    adapter.upgrade(new)
+                }else {
+                    val new = elementos.filter {dato -> dato.asunto.contains(text.toString().trim())}
+                    adapter.upgrade(new)
+                }
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -324,8 +332,8 @@ class ManageActivity : AppCompatActivity() {
                     val c = Cipher.getInstance("AES/GCM/NoPadding")
                     c.init(Cipher.ENCRYPT_MODE, ks.getKey(ali, null))
 
-                    db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
-                    elementos.add(manage_data(asunto, pass, elementos.size.toString()))
+                    db.put(elementos.size, Base64.getEncoder().withoutPadding().encodeToString(asunto.toByteArray()), Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(pass.trim().toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c.iv))
+                    elementos.add(manage_data(asunto, pass.trim(), elementos.size.toString()))
                     adapter.upgrade(elementos)
                     if (elementos.size > 1) {
                         filter.visibility = View.VISIBLE
