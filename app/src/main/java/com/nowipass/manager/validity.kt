@@ -1,8 +1,11 @@
 package com.nowipass.manager
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
@@ -13,7 +16,9 @@ import androidx.security.crypto.MasterKey
 import com.nowipass.MainActivity
 import com.nowipass.activitis
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -22,8 +27,9 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 
+private lateinit var scope_validity: Job
+@RequiresApi(Build.VERSION_CODES.O)
 fun validity_duration(context: Context, tiempo: Int){
-    val scope = CoroutineScope(Dispatchers.IO)
 
     val mk = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -31,27 +37,32 @@ fun validity_duration(context: Context, tiempo: Int){
 
     var pref = EncryptedSharedPreferences.create(context, "ap", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
-    scope.launch{
+    scope_validity = CoroutineScope(Dispatchers.IO).launch (start = CoroutineStart.LAZY){
         for(time in 1..tiempo){
             tim ++
-            if (time == tiempo) {
-                if (pref.getBoolean("where", false)) {
-                    val intent = Intent(context, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    context.startActivity(intent)
-                }
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Your time is up", Toast.LENGTH_LONG).show()
-                }
-                pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-                pref.edit().putBoolean("aute", false).apply()
-                tim = 0
-                resume = false
-                scope.cancel()
-            }
             delay(1000)
         }
+
+        if (pref.getBoolean("where", false)) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
+        }
+
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "Your time is up", Toast.LENGTH_LONG).show()
+        }
+        pref = EncryptedSharedPreferences.create(context, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        pref.edit().putBoolean("aute", false).apply()
+        tim = 0
+        resume = false
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val efect = VibrationEffect.createWaveform(longArrayOf(0, 50, 10, 50, 0), -1)
+        vibrator.vibrate(efect)
+
+        scope_validity.cancel()
     }
+    scope_validity.start()
 
     Toast.makeText(context, "You have $tiempo seconds to do whatever you want.", Toast.LENGTH_LONG).show()
 }
