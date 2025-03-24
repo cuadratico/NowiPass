@@ -6,15 +6,15 @@
 
 - Malicious sites where GitHub repositories are published are a reality so I'm going to tell you where you can download NowiPass without problems.
 
-[![Static Badge](https://img.shields.io/badge/Github-0.4.13-black)](https://github.com/cuadratico/NowiPass/releases)
+[![Static Badge](https://img.shields.io/badge/Github-0.4.14-black)](https://github.com/cuadratico/NowiPass/releases)
 
-[![Static Badge](https://img.shields.io/badge/izzysoft-0.4.13-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/izzysoft-0.4.14-blue)](https://apt.izzysoft.de/fdroid/index/apk/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/openapk-0.4.13-violet)](https://www.openapk.net/nowipass/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/openapk-0.4.14-violet)](https://www.openapk.net/nowipass/com.nowipass/)
 
-[![Static Badge](https://img.shields.io/badge/androidfreeware-0.4.13-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
+[![Static Badge](https://img.shields.io/badge/androidfreeware-0.4.14-yellow)](https://www.androidfreeware.net/es/download-nowipass-apk.html)
 
-[![Static Badge](https://img.shields.io/badge/FDroid-0.4.13-green)](https://f-droid.org/es/packages/com.nowipass/)
+[![Static Badge](https://img.shields.io/badge/FDroid-0.4.14-green)](https://f-droid.org/es/packages/com.nowipass/)
 
 
 
