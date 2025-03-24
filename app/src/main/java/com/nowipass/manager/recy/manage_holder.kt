@@ -41,6 +41,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.nowipass.data_bases.pass_db.Companion.elementos
 import com.nowipass.manager.activity
+import com.nowipass.manager.scrollTo
 
 @SuppressLint("NewApi")
 class manage_holder(view: View): RecyclerView.ViewHolder(view) {
@@ -74,7 +75,7 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
         all.contentDescription = "Check your password number ${position.text}"
 
         all.setOnClickListener {
-
+            val posi = position.text.toString().toInt()
             fun actualizar(){
                 all.isEnabled = false
                 upgrade_items = true
@@ -108,7 +109,7 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
             delete.contentDescription = "Delete your password"
 
             delete.setOnClickListener {
-                val posi = position.text.toString().toInt()
+
                 elementos.removeAt(posi)
                 db.delete(posi)
                 dialog.dismiss()
@@ -133,6 +134,7 @@ class manage_holder(view: View): RecyclerView.ViewHolder(view) {
                 elementos[position.text.toString().toInt()] = manage_data(input_a.text.toString(), input_p.text.toString(), position.text.toString())
                 dialog.dismiss()
                 actualizar()
+                scrollTo = posi
             }
 
             add_mac.setOnClickListener {

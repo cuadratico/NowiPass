@@ -35,4 +35,9 @@ class manage_adapter(var list: List<manage_data>, val fil: SearchView): Recycler
         notifyDataSetChanged()
     }
 
+    fun upgrade_item(posotion: Int){
+        this.list = elementos
+        notifyItemChanged(posotion)
+    }
+
 }

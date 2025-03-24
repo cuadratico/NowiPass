@@ -70,10 +70,11 @@ import javax.crypto.spec.GCMParameterSpec
 var tim = 0
 var upgrade_items = false
 var resume = false
-var scrollTo = 0
+var scrollTo = -1
 lateinit var activity: Activity
 
 class ManageActivity : AppCompatActivity() {
+    private lateinit var spinner_dialog: AlertDialog.Builder
     @SuppressLint("NewApi", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,9 +141,15 @@ class ManageActivity : AppCompatActivity() {
             while (true){
                 if (upgrade_items) {
                     upgrade_items = false
-                    withContext(Dispatchers.Main) {
-                        adapter.upgrade(elementos)
+                    withContext (Dispatchers.Main) {
+                        if (scrollTo >= 0) {
+                            adapter.upgrade_item(scrollTo)
+                            scrollTo = -1
+                        }else {
+                            adapter.upgrade(elementos)
+                        }
                     }
+
                 }
                 if (scrollTo > 0){
                     withContext (Dispatchers.Main){
@@ -153,21 +160,27 @@ class ManageActivity : AppCompatActivity() {
             }
         }
 
+
         fun secure_question(){
             val gen = gen(this)
             val dialog = Dialog(this)
+            var ques_posi = 0
             val view = layoutInflater.inflate(R.layout.secure_question_interfaz, null)
-            var question = ""
-            val spinner = view.findViewById<AppCompatSpinner>(R.id.spinner_questions)
-            spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf("What are your two favorite numbers?", "What is your favorite day of the month?", "What is the name of your pet?", "What is the name of the loved one you care about the most?", "What is your favorite programming language?", "What is the password manager you feel most secure with?", "What is your favorite season of the year?", "What is your favorite month of the year?", "What city do you dream of living in?", "What is your birthday?", "What is your favorite food?", "What is your favorite company?"))
-            spinner.setOnItemSelectedListener(object: AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(list: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-                    question = list?.getItemAtPosition(position).toString()
-                }
+            val spinner = view.findViewById<ConstraintLayout>(R.id.spinner_all)
+            val spinner_question = view.findViewById<TextView>(R.id.spinner_questions)
+            val questions = arrayOf("What are your two favorite numbers?", "What is your favorite day of the month?", "What is the name of your pet?", "What is the name of the loved one you care about the most?", "What is your favorite programming language?", "What is the password manager you feel most secure with?", "What is your favorite season of the year?", "What is your favorite month of the year?", "What city do you dream of living in?", "What is your birthday?", "What is your favorite food?", "What is your favorite company?")
+            spinner_question.text = questions.toList().shuffled().take(1).joinToString("")
 
-                override fun onNothingSelected(p0: AdapterView<*>?) {}
+            spinner.setOnClickListener {
+                spinner_dialog = AlertDialog.Builder(this)
+                    .setTitle("Select your security question")
+                    .setSingleChoiceItems (questions, ques_posi){_, position ->
+                        ques_posi = position
+                        spinner_question.text = questions[position]
+                    }
+                spinner_dialog.show()
+            }
 
-            })
             val input = view.findViewById<AppCompatEditText>(R.id.input_answer)
             val fondo = view.findViewById<View>(R.id.fondo_opor)
             fondo.visibility = View.INVISIBLE
@@ -181,7 +194,7 @@ class ManageActivity : AppCompatActivity() {
                 if (input.text.toString().trim().isNotEmpty()) {
                     pref.edit().putBoolean("question_exist", true).apply()
                     pref = EncryptedSharedPreferences.create(this, "as", mk, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-                    pref.edit().putString("question", question).apply()
+                    pref.edit().putString("question", questions[ques_posi]).apply()
                     pref.edit().putString("aws", input.text.toString()).apply()
 
                     val kgen = KeyGenParameterSpec.Builder(input.text.toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT)

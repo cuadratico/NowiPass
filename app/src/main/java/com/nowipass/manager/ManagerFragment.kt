@@ -140,6 +140,8 @@ class ManagerFragment : Fragment() {
             val view = LayoutInflater.from(requireContext()).inflate(R.layout.secure_question_interfaz, null)
 
 
+            val spinner_all = view.findViewById<ConstraintLayout>(R.id.spinner_all)
+            spinner_all.visibility = View.INVISIBLE
             val opor = view.findViewById<TextView>(R.id.opor)
             opor.text = pref_ap.getString("opor", "3")
             val question = view.findViewById<TextView>(R.id.question)
