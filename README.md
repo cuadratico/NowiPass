@@ -1,6 +1,8 @@
 ![Logo](https://github.com/cuadratico/NowiPass/blob/master/fastlane/metadata/android/en-US/images/icon.png)
 
 
+# NowiPass is no longer being updated; the app that supports it is NothingK
+https://github.com/cuadratico/NothingK
 
 # Where is it safe to download NowiPass
 
